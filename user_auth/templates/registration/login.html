@@ -1,0 +1,51 @@
+{% extends "registration/base.html" %}
+
+{% load widget_tweaks %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<br>
+<div class="container-fluid">
+    
+    {% include "registration/errors_and_messages.html" %}
+
+    <div class="row">
+        <div class="col-md-4 offset-md-4">
+            <form class="form-signin" method="post" action="">
+                {% csrf_token %}
+                <h2 class="form-signin-heading">Login</h2>
+
+                <label for="{{ form.username.id_for_label }}" class="sr-only">Username</label> 
+                {{ form.username |attr:"placeholder:Username" |add_class:"form-control" }}
+
+                <label for="{{ form.password.id_for_label }}" class="sr-only">Password</label> 
+                {{ form.password | attr:"placeholder:Password" |add_class:"form-control" }}
+
+                <button class="btn btn-primary btn-block" type="submit">Login</button>
+                <input type="hidden" name="next" value="{{ next }}" />
+            </form>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col">
+            {% if request.GET.next %}
+            <p>Don't have an account? <a href="{% url 'user_auth:register' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Sign up</a>
+            </p>
+            {% else %}
+            <p>Don't have an account? <a href="{% url 'user_auth:register' %}">Sign up</a>
+            </p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+            <p>Forgot your password? <a href="{% url 'user_auth:password_reset' %}">Reset password</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

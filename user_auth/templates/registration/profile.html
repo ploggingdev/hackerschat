@@ -1,0 +1,46 @@
+{% extends "registration/base.html" %}
+
+{% load widget_tweaks %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+<br>
+
+<div class="container-fluid">
+    
+    {% include "registration/errors_and_messages.html" %}
+
+    <div class="row text-left">
+        <div class="col-md-4 offset-md-4">
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                <input type="text" value="{{ request.user.username }}" id="id_username" class="form-control" disabled/> 
+            </div>
+            <form method="post" class="form" action="{% url 'user_auth:profile' %}">
+            {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}">Email address</label>
+                        {{ form.email |attr:"placeholder:Email" |add_class:"form-control" }} 
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.about.id_for_label }}">About</label>
+                        {{ form.about |attr:"placeholder:About" |add_class:"form-control" }} 
+                    </div>
+                <button class="btn btn-primary" type="submit">Update</button>
+                <input type="hidden" name="next" value="{{ next }}" />
+            </form>
+        </div>
+    </div>
+
+<br />
+<a class="btn btn-secondary" href="{% url 'user_auth:password_change' %}">Change password</a>
+<br /><br />
+<a class="btn btn-secondary" href="{% url 'user_auth:password_reset' %}">Reset password</a>
+<br /><br />
+
+</div>
+
+{% endblock %}
