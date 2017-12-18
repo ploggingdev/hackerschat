@@ -1,9 +1,64 @@
 {% extends "registration/base.html" %}
+{% load static %}
+
 {% block title %}Bored Hackers{% endblock %}
 {% block content %}
 <br>
 <div class="container-fluid">
-{% include "registration/errors_and_messages.html" %}
-<p>Hello World! This is the start of Bored Hackers.</p>
+    {% include "registration/errors_and_messages.html" %}
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2 text-left pre-scrollable" id="all_messages">
+            <input type="text" id="last_message_id" value="{{ first_message_id }}" hidden>
+            {% if first_message_id > 0 %}
+            <div class="text-center">
+                <button id="load_old_messages" class="btn btn-primary">Load previous messages</button>
+            </div>
+            {% endif %}
+            <ul class="list-group" id="chat">
+
+                {% for message in chat_messages %}
+                <li class="list-group-item">
+                    <strong>
+                        <a href="{% url 'user_auth:public_user_profile' message.user.username %}">{{ message.user }}</a> : </strong>
+                    {{ message.message_html|safe }}
+                </li>
+                {% empty %}
+                <div id="no_messages">No messages here</div>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    </br>
+
+    
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <form id="chatform" autocomplete="off">
+                <div class="form-row">
+                    <div class="col-10">
+                        {% if user.is_authenticated %}
+                        <input id="message" type="text" class="form-control focus_state" placeholder="Enter chat message here" required autofocus>
+                        {% else %}
+                        <input class="form-control form-control-lg" id="disabledInput" type="text" placeholder="Please login to chat" readonly>
+                        {% endif %}
+                    </div>
+                    <div class="col-2">
+                        <button id="go" type="submit" class="btn btn-primary input-lg">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+<br />
+<br />
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+
+<script type="text/javascript" src='{% static "js/reconnecting-websockets.js" %}'></script>
+<script type="text/javascript" src='{% static "js/chat.js" %}'></script>
+
 {% endblock %}
