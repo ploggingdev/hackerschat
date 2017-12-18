@@ -139,7 +139,7 @@ LOGIN_REDIRECT_URL = '/'
 EMAIL_BACKEND = 'postmarker.django.EmailBackend'
 
 POSTMARK = {
-    'TOKEN': os.environ['hostedcomments_postmark_token'],
+    'TOKEN': os.environ['boredhackers_postmark_token'],
     'TEST_MODE': False,
 }
 
