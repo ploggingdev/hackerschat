@@ -25,8 +25,11 @@ $(function() {
             user_list_ele.text("");
 
             for(i=0; i<user_list.length; i++){
+                var username_ele = document.createElement('p');
+                username_ele.setAttribute('class','text-dark');
+                username_ele.innerText = user_list[i];
                 var li_user = document.createElement('li');
-                li_user.innerText = user_list[i];
+                li_user.append(username_ele);
                 user_list_ele.append(li_user);
             }
             return;
