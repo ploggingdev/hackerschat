@@ -15,10 +15,22 @@ $(function() {
             //lurkers count
             var lurkers = data.payload.lurkers;
             $('#lurkers-online').text(lurkers);
+            if(lurkers == 1){
+                $('#onlookers-online-indicator').text("onlooker");
+            }
+            else{
+                $('#onlookers-online-indicator').text("onlookers");
+            }
 
             //users count count
             var user_list = data.payload.members;
             $('#users-online').text(user_list.length);
+            if(user_list.length == 1){
+                $('#users-online-indicator').text("user");
+            }
+            else{
+                $('#users-online-indicator').text("users");
+            }
 
             //update user list
             var user_list_ele = $('#user_list');
