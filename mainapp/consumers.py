@@ -72,7 +72,7 @@ def chat_receive(message, topic_name):
                     cache.set('user_list', user_list)
                     user_updated = True
             if not user_updated:
-                user_list.append(item)
+                user_list.append(user_info)
                 cache.set('user_list', user_list)
         return
     
