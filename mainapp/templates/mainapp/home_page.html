@@ -8,7 +8,17 @@
     {% include "registration/errors_and_messages.html" %}
 
     <div class="row">
-        <div class="col-md-8 offset-md-2 text-left pre-scrollable" id="all_messages">
+            <div class="col-md-2 offset-md-1 text-left pre-scrollable">
+                <p>
+                    <span id="users-online" class="text-info">0</span> users online
+                </p>
+                <p>
+                    <span id="lurkers-online" class="text-info">0</span> onlookers online
+                </p>
+                <ul class="d-none d-md-block list-unstyled" id="user_list">
+                </ul>
+            </div>
+        <div class="col-md-8 text-left pre-scrollable" id="all_messages">
             <input type="text" id="last_message_id" value="{{ first_message_id }}" hidden>
             {% if first_message_id > 0 %}
             <div class="text-center">
@@ -34,7 +44,7 @@
 
     
     <div class="row">
-        <div class="col-md-8 offset-md-2">
+        <div class="col-md-8 offset-md-3">
             <form id="chatform" autocomplete="off">
                 <div class="form-row">
                     <div class="col-10">

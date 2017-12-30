@@ -3,15 +3,34 @@ $(function() {
     var to_focus = $("#message");
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     //temporarily hardcoded
-    var chatsock = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + window.location.pathname+ "topics/general/chat/ws/");
+    var chatsock = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/topics/general/chat/ws/");
 
     chatsock.onmessage = function(message) {
 
         if($("#no_messages").length){
             $("#no_messages").remove();
         }
-
         var data = JSON.parse(message.data);
+        if(data.type == "presence"){
+            //lurkers count
+            var lurkers = data.payload.lurkers;
+            $('#lurkers-online').text(lurkers);
+
+            //users count count
+            var user_list = data.payload.members;
+            $('#users-online').text(user_list.length);
+
+            //update user list
+            var user_list_ele = $('#user_list');
+            user_list_ele.text("");
+
+            for(i=0; i<user_list.length; i++){
+                var li_user = document.createElement('li');
+                li_user.innerText = user_list[i];
+                user_list_ele.append(li_user);
+            }
+            return;
+        }
         var chat = $("#chat")
         var ele = $('<li class="list-group-item"></li>')
         
@@ -80,4 +99,9 @@ $(function() {
         scrollbacksock.send(JSON.stringify(message));
         return false;
     });
+    
+    //hearbeat
+    setInterval(function() {
+        chatsock.send(JSON.stringify("heartbeat"));
+    }, 5000);
 });

@@ -11,16 +11,71 @@ import bleach
 import re
 from django.conf import settings
 from django.urls import reverse
+import time
+from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
 
 @channel_session_user_from_http
 def chat_connect(message, topic_name):
-    topic = Topic.objects.get(name=topic_name)
+    try:
+        topic = Topic.objects.get(name=topic_name)
+    except ObjectDoesNotExist:
+        message.reply_channel.send({"close": True})
+        return
     Group(topic_name).add(message.reply_channel)
+    user_info = {'last_seen' : time.time(), 'reply_channel' : message.reply_channel.name, 'topic' : topic_name}
+    #add to redis
+    if message.user.is_authenticated:
+        user_info['username'] = message.user.username
+    else:
+        user_info['username'] = None
+
+    user_list = cache.get('user_list')
+    if user_list == None:
+        user_list = list()
+        user_list.append(user_info)
+        cache.set('user_list', user_list)
+    else:
+        user_updated = False
+        for item in user_list:
+            if item['reply_channel'] == user_info['reply_channel']:
+                user_list.remove(item)
+                user_list.append(user_info)
+                user_updated = True
+        if not user_updated:
+            user_list.append(user_info)
+        cache.set('user_list', user_list)
     message.reply_channel.send({"accept": True})
 
 @channel_session_user
 def chat_receive(message, topic_name):
-    topic = Topic.objects.get(name=topic_name)
+    try:
+        topic = Topic.objects.get(name=topic_name)
+    except ObjectDoesNotExist:
+        return
+    #check for hearbeat
+    if message.content.get('text') == '"heartbeat"':
+        user_info = {'last_seen' : time.time(), 'reply_channel' : message.reply_channel.name, 'topic' : topic_name}
+        #add to redis
+        if message.user.is_authenticated:
+            user_info['username'] = message.user.username
+        else:
+            user_info['username'] = None
+        user_list = cache.get('user_list')
+        if user_list != None:
+            user_updated = False
+            for item in user_list:
+                if item['reply_channel'] == user_info['reply_channel']:
+                    user_list.remove(item)
+                    item['last_seen'] = time.time()
+                    user_list.append(item)
+                    cache.set('user_list', user_list)
+                    user_updated = True
+            if not user_updated:
+                user_list.append(item)
+                cache.set('user_list', user_list)
+        return
+    
     data = json.loads(message['text'])
     if not data['message']:
         return
@@ -53,15 +108,35 @@ def chat_receive(message, topic_name):
 
 @channel_session_user
 def chat_disconnect(message, topic_name):
+    try:
+        topic = Topic.objects.get(name=topic_name)
+    except ObjectDoesNotExist:
+        return
     Group(topic_name).discard(message.reply_channel)
+    user_info = {'last_seen' : time.time(), 'reply_channel' : message.reply_channel.name, 'topic' : topic_name}
+    #remove from redis
+    user_list = cache.get('user_list')
+    if user_list != None:
+        for item in user_list:
+            if item['reply_channel'] == user_info['reply_channel']:
+                user_list.remove(item)
+        cache.set('user_list', user_list)
 
 @channel_session_user_from_http
 def scrollback_connect(message, topic_name):
+    try:
+        topic = Topic.objects.get(name=topic_name)
+    except ObjectDoesNotExist:
+        message.reply_channel.send({"close": True})
+        return
     message.reply_channel.send({"accept": True})
 
 @channel_session_user
 def scrollback_receive(message, topic_name):
-    topic = Topic.objects.get(name=topic_name)
+    try:
+        topic = Topic.objects.get(name=topic_name)
+    except ObjectDoesNotExist:
+        return
     data = json.loads(message['text'])
     chat_queryset = ChatMessage.objects.filter(topic=topic).filter(id__lte=data['last_message_id']).order_by("-created")[:10]
     chat_message_count = len(chat_queryset)
