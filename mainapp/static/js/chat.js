@@ -81,13 +81,13 @@ $(function() {
         
         if(last_id == -1){
             $("#load_old_messages").remove();
-            $("#last_message_id").text(last_id)
+            $("#last_message_id").val(last_id)
             if(new_messages.length == 0){
                 return;
             }
         }
         else{
-            $("#last_message_id").text(last_id)
+            $("#last_message_id").val(last_id)
         }
 
         var chat = $("#chat")
