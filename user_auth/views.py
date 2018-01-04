@@ -52,12 +52,12 @@ class RegisterView(View):
             userprofile.save()
             if user is not None:
                 login(request, user)
-                redirect_to = request.POST.get('next', reverse('user_auth:profile'))
+                redirect_to = request.POST.get('next', reverse('mainapp:index'))
                 if is_safe_url(redirect_to):
                     return redirect(redirect_to)
                 else:
                     messages.success(request, "Welcome to Bored Hackers!")
-                    return redirect(reverse('user_auth:profile'))
+                    return redirect(reverse('mainapp:index'))
         else:
             return render(request, self.template_name, {'form' : form, 'next' : request.POST.get('next')})
 
