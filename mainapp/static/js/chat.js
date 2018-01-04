@@ -24,6 +24,7 @@ $(function() {
 
             //users count count
             var user_list = data.payload.members;
+            user_list.sort();
             $('#users-online').text(user_list.length);
             if(user_list.length == 1){
                 $('#users-online-indicator').text("user");
