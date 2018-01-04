@@ -14,6 +14,7 @@ from django.urls import reverse
 import time
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
+from bs4 import BeautifulSoup
 
 @channel_session_user_from_http
 def chat_connect(message, topic_name):
@@ -98,6 +99,11 @@ def chat_receive(message, topic_name):
             new_url = 'http://' + new_url
         new_url = '<a href="' + new_url + '">' + new_url + "</a>"
         current_message = current_message.replace(old_url, new_url)
+    soup = BeautifulSoup(current_message, "html.parser")
+    for i in soup.find_all('a'):
+        i['target'] = '_blank'
+        i['rel'] = 'noopener noreferrer nofollow'
+    current_message = soup.prettify()
     m = ChatMessage(user=message.user,topic=topic, message=data['message'], message_html=current_message)
     m.save()
 
