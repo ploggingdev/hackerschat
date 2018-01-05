@@ -119,5 +119,5 @@ $(function() {
     //hearbeat
     setInterval(function() {
         chatsock.send(JSON.stringify("heartbeat"));
-    }, 5000);
+    }, 10000);
 });

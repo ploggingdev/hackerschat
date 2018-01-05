@@ -46,6 +46,31 @@ def chat_connect(message, topic_name):
             user_list.append(user_info)
         cache.set('user_list', user_list)
     message.reply_channel.send({"accept": True})
+    #update and send presence info to user
+    topic_users = cache.get('topic_users')
+    topic_anon_count = cache.get('topic_anon_count')
+    if topic_users != None and topic_anon_count != None:
+        if topic_name not in topic_users:
+            topic_users[topic_name] = set()
+        if user_info['username'] != None:
+            topic_users[topic_name].add(user_info['username'])
+
+        if topic_name not in topic_anon_count:
+            topic_anon_count[topic_name] = 0
+        if user_info['username'] == None:
+            topic_anon_count[topic_name] += 1
+        cache.set('topic_users', topic_users)
+        cache.set('topic_anon_count', topic_anon_count)
+        message.reply_channel.send({
+            'text': json.dumps({
+                'type': 'presence',
+                'payload': {
+                    'channel_name': topic_name,
+                    'members': list(topic_users[topic_name]),
+                    'lurkers': topic_anon_count[topic_name],
+                }
+            })
+        })
 
 @channel_session_user
 def chat_receive(message, topic_name):

@@ -56,7 +56,8 @@ def broadcast_presence():
             topic_anon_count[topic_name] = 0
         if user['username'] == None:
             topic_anon_count[topic_name] += 1
-
+    cache.set('topic_users', topic_users)
+    cache.set('topic_anon_count', topic_anon_count)
     for topic_name in topics:
         Group(topic_name).send({
             'text': json.dumps({
