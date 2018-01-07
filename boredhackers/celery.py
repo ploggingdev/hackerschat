@@ -41,6 +41,9 @@ def broadcast_presence():
     from channels import Group
     import json
     user_list = cache.get('user_list')
+    if user_list == None:
+        user_list = list()
+        cache.set('user_list', user_list)
     topic_users = {}
     topic_anon_count = {}
     topics = set()
