@@ -147,7 +147,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgi_redis.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            "hosts": [os.environ.get('redis_url', 'redis://localhost:6379')],
         },
         "ROUTING": "mainapp.routing.channel_routing",
     },
@@ -156,7 +156,7 @@ CHANNEL_LAYERS = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": [os.environ.get('redis_url', 'redis://localhost:6379')],
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
