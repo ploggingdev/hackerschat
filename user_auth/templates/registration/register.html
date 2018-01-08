@@ -28,7 +28,7 @@
 
             <label for="{{ form.password.id_for_label }}" class="sr-only">Password</label> 
             {{ form.password | attr:"placeholder:Password" |add_class:"form-control" }}
-            
+            <div class="g-recaptcha" data-sitekey="6Ld9uj8UAAAAAAmrMOKVbaQveI4paN6C3aAM_h6D"></div>
             <button class="btn btn-primary btn-block" type="submit">Register</button>
             {% if request.GET.next %}
             <input type="hidden" name="next" value="{{ next }}" />
@@ -56,5 +56,11 @@
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+<script src='https://www.google.com/recaptcha/api.js'></script>
 
 {% endblock %}

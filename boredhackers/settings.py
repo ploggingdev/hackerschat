@@ -166,3 +166,5 @@ CACHES = {
 CELERY_TASK_INTERVAL = 10
 CELERY_TASK_EXPIRES = 10
 LAST_SEEN_LIMIT = 30
+
+RECAPTCHA_SECRET_KEY = os.environ['boredhackers_recaptcha_secret_key']

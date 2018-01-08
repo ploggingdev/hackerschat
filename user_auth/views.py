@@ -12,6 +12,8 @@ from django.core import exceptions
 from .models import UserProfile
 from django.utils.http import is_safe_url
 from django.http import HttpResponse
+from django.conf import settings
+import requests
 
 class RegisterView(View):
     form_class  = RegisterForm
@@ -28,6 +30,19 @@ class RegisterView(View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
         if form.is_valid():
+            #recaptcha validation
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            data = {
+                'secret': settings.RECAPTCHA_SECRET_KEY,
+                'response': recaptcha_response
+            }
+            r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+            result = r.json()
+
+            if not result['success']:
+                messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+                return render(request, self.template_name, {'form' : form, 'next' : request.POST.get('next')})
+            
             new_username = form.cleaned_data['username']
             new_password = form.cleaned_data['password']
             new_email = form.cleaned_data['email']
