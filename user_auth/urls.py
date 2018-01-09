@@ -10,7 +10,7 @@ urlpatterns = [
     re_path('profile/(?P<username>[a-zA-Z0-9_-]+)/', views.PublicUserProfileView.as_view(), name='public_user_profile'),
     path(
         'login/',
-        auth_views.LoginView.as_view(redirect_authenticated_user=True), name="login",
+        views.CustomLoginView.as_view(redirect_authenticated_user=True), name="login",
     ),
     path(
         'logout/',
