@@ -14,8 +14,27 @@ from django.utils.http import is_safe_url
 from django.http import HttpResponse
 from django.conf import settings
 import requests
-from django.contrib.auth.views import LoginView
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.views import LoginView, PasswordResetView
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
+
+class CustomPasswordResetView(PasswordResetView):
+    def post(self, request, *args, **kwargs):
+        #recaptcha validation
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        if recaptcha_response == '':
+            messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+            return render(request, self.template_name, {'form' : PasswordResetForm(initial={'email' : request.POST.get('email')}), 'next' : request.POST.get('next')})
+        data = {
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+
+        if not result['success']:
+            messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+            return render(request, self.template_name, {'form' : PasswordResetForm(initial={'email' : request.POST.get('email')}), 'next' : request.POST.get('next')})
+        return super().post(request, *args, **kwargs)
 
 class CustomLoginView(LoginView):
     def post(self, request, *args, **kwargs):
