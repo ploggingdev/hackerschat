@@ -53,6 +53,9 @@ class RegisterView(View):
         if form.is_valid():
             #recaptcha validation
             recaptcha_response = request.POST.get('g-recaptcha-response')
+            if recaptcha_response == '':
+                messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+                return render(request, self.template_name, {'form' : form, 'next' : request.POST.get('next')})
             data = {
                 'secret': settings.RECAPTCHA_SECRET_KEY,
                 'response': recaptcha_response
