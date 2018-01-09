@@ -11,7 +11,7 @@ import bleach
 import re
 from django.conf import settings
 from django.urls import reverse
-import time
+import time, datetime
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -100,12 +100,25 @@ def chat_receive(message, topic_name):
                 user_list.append(user_info)
                 cache.set('user_list', user_list)
         return
-    
+    #ignore message if user is not authenticated
+    if not message.user.is_authenticated:
+        return
+    #check if rate limit has been reached
+    if ChatMessage.objects.filter(user=message.user).filter(created__gte=datetime.datetime.utcnow() - datetime.timedelta(minutes=1)).count() >=5:
+        message.reply_channel.send({
+            'text': json.dumps({
+                'type': 'error',
+                'payload': {
+                    'message': "Rate limit reached. You can send 5 messages per minute.",
+                }
+            })
+        })
+        return
+
     data = json.loads(message['text'])
     if not data['message']:
         return
-    if not message.user.is_authenticated:
-        return
+    
     current_message = escape(data['message'])
     urlRegex = re.compile(
             u'(?isu)(\\b(?:https?://|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}/)[^\\s()<'
