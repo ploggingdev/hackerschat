@@ -11,7 +11,6 @@ from django.core.exceptions import ValidationError
 from django.core import exceptions
 from .models import UserProfile
 from django.utils.http import is_safe_url
-from django.http import HttpResponse
 from django.conf import settings
 import requests
 from django.contrib.auth.views import LoginView, PasswordResetView
@@ -60,7 +59,6 @@ class RegisterView(View):
     template_name = 'registration/register.html'
 
     def get(self, request, *args, **kwargs):
-        return HttpResponse("Registration is currently disabled because of 4chan trolls. If you want an invite send an email to ploggingdev @ gmail")
         if request.user.is_authenticated:
             messages.info(request, "You are already logged in.")
             return redirect(reverse('user_auth:profile'))
