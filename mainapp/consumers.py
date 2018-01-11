@@ -57,8 +57,7 @@ def chat_connect(message, topic_name):
 
         if topic_name not in topic_anon_count:
             topic_anon_count[topic_name] = 0
-        if user_info['username'] == None:
-            topic_anon_count[topic_name] += 1
+        
         cache.set('topic_users', topic_users)
         cache.set('topic_anon_count', topic_anon_count)
         message.reply_channel.send({
