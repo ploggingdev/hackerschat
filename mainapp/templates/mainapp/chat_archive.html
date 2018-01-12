@@ -1,0 +1,42 @@
+{% extends "registration/base.html" %}
+{% load static %}
+
+{% block title %}Chat Archive - {{ topic.name }}{% endblock %}
+{% block content %}
+<br/>
+<div class="container-fluid">
+    {% include "registration/errors_and_messages.html" %}
+    <br/>
+    <h4>Chat Archive - {{ topic.name }}</h4>
+    <br/>
+    {% if not error_message %}
+        <h5>Showing chat messages sent on {{ date }}</h5>
+        <br/>
+    {% endif %}
+    <form method="get" action="">
+        <label for="date">{{ message }}</label>
+        <input name="date" id="date" type="date" required>
+        &nbsp;
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <br/>
+    {% if error_message %}
+        {{ error_message }}
+    {% else %}
+        <br/>
+        <div class="row">
+            <div class="col-md-8 offset-md-2 text-left">
+                <p class="text-left"><strong>Time Zone : UTC</strong></p>
+                <br/>
+                <ul class="list-unstyled">
+                    {% for message in chat_messages %}
+                        <li><i>{{ message.created }}</i> <strong>{{ message.user }} : </strong>{{ message.message_html | safe }}</li>
+                        <br/>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+    <br/>
+</div>
+{% endblock %}
