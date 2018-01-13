@@ -10,7 +10,7 @@
     <h4>Chat Archive - {{ topic.name }}</h4>
     <br/>
     {% if not error_message %}
-        <h5>Showing chat messages sent on {{ date }}</h5>
+        <h5>Showing {{ chat_messages.count }} chat messages sent on {{ date }}</h5>
         <br/>
     {% endif %}
     <form method="get" action="">
