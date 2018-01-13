@@ -50,17 +50,18 @@ def chat_connect(message, topic_name):
     #send presence info to user
     topic_users = cache.get('topic_users')
     topic_anon_count = cache.get('topic_anon_count')
-    if topic_users != None and topic_anon_count!=None:
-        message.reply_channel.send({
-            'text': json.dumps({
-                'type': 'presence',
-                'payload': {
-                    'channel_name': topic_name,
-                    'members': list(topic_users[topic_name]),
-                    'lurkers': topic_anon_count[topic_name],
-                }
-            })
+    if topic_users == None or topic_anon_count == None or topic_name not in topic_users or topic_name not in topic_anon_count:
+        return
+    message.reply_channel.send({
+        'text': json.dumps({
+            'type': 'presence',
+            'payload': {
+                'channel_name': topic_name,
+                'members': list(topic_users[topic_name]),
+                'lurkers': topic_anon_count[topic_name],
+            }
         })
+    })
 
 @channel_session_user
 def chat_receive(message, topic_name):
