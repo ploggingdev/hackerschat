@@ -3,6 +3,9 @@ import os
 from celery import Celery, shared_task
 from django.core.cache import cache
 from django.conf import settings
+from channels import Group
+import json
+import time
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'boredhackers.settings')
@@ -25,7 +28,6 @@ def setup_periodic_tasks(sender, **kwargs):
 
 @app.task
 def prune_redis_user_list():
-    import time
     user_list = cache.get('user_list')
     if user_list == None:
         user_list = list()
@@ -38,8 +40,25 @@ def prune_redis_user_list():
 
 @app.task
 def broadcast_presence():
-    from channels import Group
-    import json
+    update_presence_data()
+    user_list = cache.get('user_list')
+    topic_users = cache.get('topic_users')
+    topic_anon_count = cache.get('topic_anon_count')
+    topics = cache.get('topics')
+    for topic_name in topics:
+        Group(topic_name).send({
+            'text': json.dumps({
+                'type': 'presence',
+                'payload': {
+                    'channel_name': topic_name,
+                    'members': list(topic_users[topic_name]),
+                    'lurkers': topic_anon_count[topic_name],
+                }
+            })
+        })
+
+@app.task
+def update_presence_data():
     user_list = cache.get('user_list')
     if user_list == None:
         user_list = list()
@@ -61,14 +80,4 @@ def broadcast_presence():
             topic_anon_count[topic_name] += 1
     cache.set('topic_users', topic_users)
     cache.set('topic_anon_count', topic_anon_count)
-    for topic_name in topics:
-        Group(topic_name).send({
-            'text': json.dumps({
-                'type': 'presence',
-                'payload': {
-                    'channel_name': topic_name,
-                    'members': list(topic_users[topic_name]),
-                    'lurkers': topic_anon_count[topic_name],
-                }
-            })
-        })
+    cache.set('topics', topics)

@@ -25,7 +25,7 @@ def chat_connect(message, topic_name):
         return
     Group(topic_name).add(message.reply_channel)
     user_info = {'last_seen' : time.time(), 'reply_channel' : message.reply_channel.name, 'topic' : topic_name}
-    #add to redis
+    #update user_list in redis
     if message.user.is_authenticated:
         user_info['username'] = message.user.username
     else:
@@ -47,20 +47,10 @@ def chat_connect(message, topic_name):
             user_list.append(user_info)
         cache.set('user_list', user_list)
     message.reply_channel.send({"accept": True})
-    #update and send presence info to user
+    #send presence info to user
     topic_users = cache.get('topic_users')
     topic_anon_count = cache.get('topic_anon_count')
-    if topic_users != None and topic_anon_count != None:
-        if topic_name not in topic_users:
-            topic_users[topic_name] = set()
-        if user_info['username'] != None:
-            topic_users[topic_name].add(user_info['username'])
-
-        if topic_name not in topic_anon_count:
-            topic_anon_count[topic_name] = 0
-        
-        cache.set('topic_users', topic_users)
-        cache.set('topic_anon_count', topic_anon_count)
+    if topic_users != None and topic_anon_count!=None:
         message.reply_channel.send({
             'text': json.dumps({
                 'type': 'presence',
