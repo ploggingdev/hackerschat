@@ -23,7 +23,6 @@ app.autodiscover_tasks()
 
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(settings.CELERY_TASK_INTERVAL, prune_redis_user_list.s(), name="Prune user list", expires=settings.CELERY_TASK_EXPIRES)
     sender.add_periodic_task(settings.CELERY_TASK_INTERVAL, broadcast_presence.s(), name="Broadcast presence", expires=settings.CELERY_TASK_EXPIRES)
 
 @app.task
@@ -40,6 +39,7 @@ def prune_redis_user_list():
 
 @app.task
 def broadcast_presence():
+    prune_redis_user_list()
     update_presence_data()
     user_list = cache.get('user_list')
     topic_users = cache.get('topic_users')
