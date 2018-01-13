@@ -14,6 +14,7 @@ from django.urls import reverse
 import time, datetime
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 @channel_session_user_from_http
 def chat_connect(message, topic_name):
@@ -103,7 +104,7 @@ def chat_receive(message, topic_name):
     if not message.user.is_authenticated:
         return
     #check if rate limit has been reached
-    if ChatMessage.objects.filter(user=message.user).filter(created__gte=datetime.datetime.utcnow() - datetime.timedelta(minutes=1)).count() >=5:
+    if ChatMessage.objects.filter(user=message.user).filter(created__gte=timezone.now() - datetime.timedelta(minutes=1)).count() >=5:
         message.reply_channel.send({
             'text': json.dumps({
                 'type': 'error',
