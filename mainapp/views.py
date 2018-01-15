@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 import datetime
 from django.utils import timezone
+from django.urls import reverse
 
 class IndexView(View):
     template_name = 'mainapp/home_page.html'
@@ -74,6 +75,15 @@ class ChatArchive(View):
         if error_message != None:
             return render(request, self.template_name, {'topic' : topic, 'error_message' : error_message, 'message' : message})
         chat_messages = ChatMessage.objects.filter(created__gte=given_date).filter(created__lte=given_date + datetime.timedelta(days=1))
+        # next/prev links
+        if given_date - datetime.timedelta(days=1) < min_date:
+            prev_page = None
+        else:
+            prev_page = "{}?date={}".format(reverse('mainapp:chat_archive', args=[topic_name,]), (given_date - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+        if now < given_date + datetime.timedelta(days=1):
+            next_page = None
+        else:
+            next_page = "{}?date={}".format(reverse('mainapp:chat_archive', args=[topic_name,]), (given_date + datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
         #format date
         given_date = given_date.strftime('%b-%d-%Y')
-        return render(request, self.template_name, {'topic' : topic, 'chat_messages' : chat_messages, 'date' : given_date, 'error_message' : error_message, 'message' : message})
+        return render(request, self.template_name, {'topic' : topic, 'chat_messages' : chat_messages, 'date' : given_date, 'error_message' : error_message, 'message' : message, 'prev_page' : prev_page, 'next_page' : next_page})

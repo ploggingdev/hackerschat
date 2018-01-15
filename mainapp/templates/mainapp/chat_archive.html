@@ -34,6 +34,19 @@
                         <br/>
                     {% endfor %}
                 </ul>
+                <br/>
+                {% if next_page or prev_page %}
+                <nav aria-label="Chat archive navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if prev_page %}
+                            <li class="page-item"><a class="page-link" href="{{ prev_page }}">Previous</a></li>
+                        {% endif %}
+                        {% if next_page %}
+                            <li class="page-item"><a class="page-link" href="{{ next_page }}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
             </div>
         </div>
     {% endif %}
