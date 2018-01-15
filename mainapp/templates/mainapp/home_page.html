@@ -7,7 +7,14 @@
 <div class="container-fluid">
     {% include "registration/errors_and_messages.html" %}
     <br/>
-    <a href="/topics/general/chat/archive">Chat archive</a>
+    <div class="row">
+        <div class="col-md-4 offset-md-4">
+            <nav class="nav nav-pills nav-justified">
+                <a class="nav-item nav-link active" href="{% url 'mainapp:index' %}">Chat room</a>
+                <a class="nav-item nav-link disabled" href="/topics/general/chat/archive"><strong>Chat archive</strong></a>
+            </nav>
+        </div>
+    </div>
     <br/><br/>
     <div class="row">
             <div class="col-md-2 offset-md-1 text-left pre-scrollable">
