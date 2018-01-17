@@ -27,7 +27,7 @@ app.autodiscover_tasks()
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(settings.CELERY_TASK_INTERVAL, broadcast_presence.s(), name="Broadcast presence", expires=settings.CELERY_TASK_EXPIRES)
 
-@app.task
+@app.task(time_limit=10)
 def prune_redis_user_list():
     user_list = cache.get('user_list')
     if user_list == None:
@@ -39,7 +39,7 @@ def prune_redis_user_list():
                 user_list.remove(item)
         cache.set('user_list', user_list)
 
-@app.task
+@app.task(time_limit=20)
 def broadcast_presence():
     prune_redis_user_list()
     update_presence_data()
@@ -59,7 +59,7 @@ def broadcast_presence():
             })
         })
 
-@app.task
+@app.task(time_limit=10)
 def update_presence_data():
     user_list = cache.get('user_list')
     if user_list == None:
@@ -84,7 +84,7 @@ def update_presence_data():
     cache.set('topic_anon_count', topic_anon_count)
     cache.set('topics', topics)
 
-@app.task
+@app.task(time_limit=10)
 def check_message_toxicity(message_id):
     from mainapp.models import ChatMessage
     try:
