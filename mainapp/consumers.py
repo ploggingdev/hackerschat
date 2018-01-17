@@ -96,12 +96,12 @@ def chat_receive(message, topic_name):
     if not message.user.is_authenticated:
         return
     #check if rate limit has been reached
-    if ChatMessage.objects.filter(user=message.user).filter(created__gte=timezone.now() - datetime.timedelta(minutes=1)).count() >=5:
+    if ChatMessage.objects.filter(user=message.user).filter(created__gte=timezone.now() - datetime.timedelta(minutes=1)).count() >= 10:
         message.reply_channel.send({
             'text': json.dumps({
                 'type': 'error',
                 'payload': {
-                    'message': "Rate limit reached. You can send 5 messages per minute.",
+                    'message': "Rate limit reached. You can send 10 messages per minute.",
                 }
             })
         })
