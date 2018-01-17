@@ -18,7 +18,7 @@ $(function() {
     //remove chat message notice when user scrolls to bottom of div
     jQuery(function($) {
         $('#all_messages').on('scroll', function() {
-            if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
+            if($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight - 10) {
                 var new_message_notice = $("#new_message_element");
                 if(new_message_notice.length != 0){
                     new_message_notice.remove();
@@ -106,7 +106,7 @@ $(function() {
         else{
             var chat_div = $("#all_messages");
             //update new message count if page is active but user has scrolled to view history
-            if($(chat_div).scrollTop() + $(chat_div).innerHeight() < $(chat_div)[0].scrollHeight){
+            if($(chat_div).scrollTop() + $(chat_div).innerHeight() < $(chat_div)[0].scrollHeight - 10){
                 var new_message_count_element = $('#new_message_count');
                 if(new_message_count_element.length==0){
                     var new_message_element = $('<li id="new_message_element" class="list-group-item active">New messages : <span id="new_message_count">1</span></li>');

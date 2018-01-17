@@ -4,20 +4,27 @@
 {% block title %}Bored Hackers{% endblock %}
 {% block content %}
 <br/>
-<div class="container-fluid">
+<style>
+    #chat-user-list{
+        overflow-y: scroll;
+        max-height: 70vh;
+        word-wrap:break-word;
+    }
+    #all_messages{
+        overflow-y: scroll;
+        overflow-x: hidden;
+        max-height: 70vh;
+        word-wrap:break-word;
+    }
+    #chat-container{
+        overflow-x: hidden;
+    }
+</style>
+<div class="container-fluid" id="chat-container">
     {% include "registration/errors_and_messages.html" %}
     <br/>
     <div class="row">
-        <div class="col-md-4 offset-md-4">
-            <nav class="nav nav-pills nav-justified">
-                <a class="nav-item nav-link active" href="{% url 'mainapp:index' %}">Chat room</a>
-                <a class="nav-item nav-link disabled" href="/topics/general/chat/archive"><strong>Chat archive</strong></a>
-            </nav>
-        </div>
-    </div>
-    <br/><br/>
-    <div class="row">
-            <div class="col-md-2 offset-md-1 text-left pre-scrollable">
+            <div class="col-md-2 offset-md-1 text-left" id="chat-user-list">
                 <p>
                     <span id="users-online" class="text-primary">0</span> <span id="users-online-indicator">users</span> online
                 </p>
@@ -27,7 +34,7 @@
                 <ul class="d-none d-md-block list-unstyled" id="user_list">
                 </ul>
             </div>
-        <div class="col-md-8 text-left pre-scrollable" id="all_messages">
+        <div class="col-md-8 text-left" id="all_messages">
             <input type="text" id="last_message_id" value="{{ first_message_id }}" hidden>
             {% if first_message_id > 0 %}
             <div class="text-center">
@@ -48,10 +55,7 @@
             </ul>
         </div>
     </div>
-
     </br>
-
-    
     <div class="row">
         <div class="col-md-8 offset-md-3" id="chat-form-container">
             <form id="chatform" autocomplete="off">
@@ -71,7 +75,6 @@
             <br/>
         </div>
     </div>
-<br />
 </div>
 {% endblock %}
 
