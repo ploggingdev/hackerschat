@@ -6,4 +6,4 @@ from reversion.admin import VersionAdmin
 @admin.register(UserProfile)
 class UserProfileAdmin(VersionAdmin):
     form = AdminUserProfileForm
-    list_display = ('user' ,'created')
+    list_display = ('user', 'to_review' ,'created')

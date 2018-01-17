@@ -99,6 +99,9 @@ def check_message_toxicity(message_id):
             toxicity_score = json_response['attributeScores']['TOXICITY']['summaryScore']['value']
             if isinstance(toxicity_score, float):
                 message.toxicity_score = toxicity_score
+                if not message.user.userprofile.to_review and toxicity_score > 0.9:
+                    message.user.userprofile.to_review = True
+                    message.user.userprofile.save()
                 message.save()
         except:
             #to add logging

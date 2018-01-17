@@ -14,7 +14,7 @@ class ProfileForm(forms.Form):
 class AdminUserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['user', 'about']
+        fields = ['user', 'to_review', 'about']
         widgets = {
             'about': forms.Textarea(attrs={'rows': 10}),
         }
