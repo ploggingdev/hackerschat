@@ -87,6 +87,9 @@ def update_presence_data():
 @app.task(time_limit=10)
 def check_message_toxicity(message_id):
     from mainapp.models import ChatMessage
+    from django.utils import timezone
+    from django.core.mail import send_mail
+    import datetime
     try:
         message = ChatMessage.objects.get(pk=message_id)
     except ObjectDoesNotExist:
@@ -99,9 +102,20 @@ def check_message_toxicity(message_id):
             toxicity_score = json_response['attributeScores']['TOXICITY']['summaryScore']['value']
             if isinstance(toxicity_score, float):
                 message.toxicity_score = toxicity_score
-                if not message.user.userprofile.to_review and toxicity_score > 0.9:
-                    message.user.userprofile.to_review = True
-                    message.user.userprofile.save()
+                if toxicity_score > 0.9:
+                    if not message.user.userprofile.to_review:
+                        message.user.userprofile.to_review = True
+                        message.user.userprofile.save()
+                    if not message.user.is_superuser and message.user.is_active and ChatMessage.objects.filter(user=message.user).filter(created__gte=timezone.now() - datetime.timedelta(days=1)).filter(toxicity_score__gte=0.9).count() >= 10:
+                        message.user.is_active = False
+                        message.user.save()
+                        send_mail(
+                        'User {} banned'.format(message.user),
+                        'Username : {}'.format(message.user),
+                        'boredhackers@ploggingdev.com',
+                        ['ploggingdev@gmail.com'],
+                        fail_silently=False,
+                        )
                 message.save()
         except:
             #to add logging
