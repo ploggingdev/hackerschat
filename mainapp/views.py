@@ -21,7 +21,7 @@ class IndexView(View):
         topic = Topic.objects.get(name=name)
 
         # We want to show the last 10 messages, ordered most-recent-last
-        chat_queryset = ChatMessage.objects.filter(topic=topic).order_by("-created")[:10]
+        chat_queryset = ChatMessage.objects.filter(topic=topic).order_by("-created")[:30]
         chat_message_count = len(chat_queryset)
         if chat_message_count > 0:
             first_message_id = chat_queryset[len(chat_queryset)-1].id
