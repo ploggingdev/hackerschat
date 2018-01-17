@@ -6,6 +6,8 @@ from django.conf import settings
 from channels import Group
 import json
 import time
+import requests
+from django.core.exceptions import ObjectDoesNotExist
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'boredhackers.settings')
@@ -81,3 +83,23 @@ def update_presence_data():
     cache.set('topic_users', topic_users)
     cache.set('topic_anon_count', topic_anon_count)
     cache.set('topics', topics)
+
+@app.task
+def check_message_toxicity(message_id):
+    from mainapp.models import ChatMessage
+    try:
+        message = ChatMessage.objects.get(pk=message_id)
+    except ObjectDoesNotExist:
+        return
+    request_data = {"comment": {"text": message.message},"languages": ["en"],"requestedAttributes": {"TOXICITY":{}} }
+    r = requests.post(settings.TOXICITY_ENDPOINT, json=request_data)
+    if r.status_code == 200:
+        try:
+            json_response = r.json()
+            toxicity_score = json_response['attributeScores']['TOXICITY']['summaryScore']['value']
+            if isinstance(toxicity_score, float):
+                message.toxicity_score = toxicity_score
+                message.save()
+        except:
+            #to add logging
+            pass

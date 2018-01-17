@@ -11,5 +11,5 @@ class TopicAdmin(VersionAdmin):
 @admin.register(ChatMessage)
 class ChatMessageAdmin(VersionAdmin):
     form = AdminChatMessageForm
-    list_display = ('user','topic','updated','created')
+    list_display = ('user','toxicity_score','topic','updated','created')
     list_filter = ['topic']

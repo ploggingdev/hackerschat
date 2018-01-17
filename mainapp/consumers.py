@@ -15,6 +15,7 @@ import time, datetime
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
+from boredhackers import celery
 
 @channel_session_user_from_http
 def chat_connect(message, topic_name):
@@ -129,6 +130,7 @@ def chat_receive(message, topic_name):
         current_message = current_message.replace(old_url, new_url)
     m = ChatMessage(user=message.user,topic=topic, message=data['message'], message_html=current_message)
     m.save()
+    celery.check_message_toxicity.delay(m.id)
 
     user_profile_url = reverse('user_auth:public_user_profile', args=[m.user.username])
 
