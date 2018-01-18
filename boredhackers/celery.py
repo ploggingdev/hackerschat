@@ -95,7 +95,11 @@ def check_message_toxicity(message_id):
     except ObjectDoesNotExist:
         return
     request_data = {"comment": {"text": message.message},"languages": ["en"],"requestedAttributes": {"TOXICITY":{}} }
-    r = requests.post(settings.TOXICITY_ENDPOINT, json=request_data)
+    try:
+        r = requests.post(settings.TOXICITY_ENDPOINT, json=request_data)
+        r.raise_for_status()
+    except:
+        return
     if r.status_code == 200:
         try:
             json_response = r.json()
