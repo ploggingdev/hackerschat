@@ -112,7 +112,7 @@ class RegisterView(View):
                 if is_safe_url(redirect_to):
                     return redirect(redirect_to)
                 else:
-                    messages.success(request, "Welcome to Bored Hackers!")
+                    messages.success(request, "Welcome to Hackers Chat!")
                     return redirect(reverse('mainapp:index'))
         else:
             return render(request, self.template_name, {'form' : form, 'next' : request.POST.get('next')})

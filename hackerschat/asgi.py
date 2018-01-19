@@ -1,5 +1,5 @@
 import os
 import channels.asgi
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "boredhackers.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hackerschat.settings")
 channel_layer = channels.asgi.get_channel_layer()

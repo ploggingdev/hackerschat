@@ -10,9 +10,9 @@ import requests
 from django.core.exceptions import ObjectDoesNotExist
 
 # set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'boredhackers.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hackerschat.settings')
 
-app = Celery('boredhackers', broker=os.environ['redis_url'])
+app = Celery('hackerschat', broker=os.environ['redis_url'])
 
 # Using a string here means the worker don't have to serialize
 # the configuration object to child processes.
@@ -116,7 +116,7 @@ def check_message_toxicity(message_id):
                         send_mail(
                         'User {} banned'.format(message.user),
                         'Username : {}'.format(message.user),
-                        'boredhackers@ploggingdev.com',
+                        'hackerschat@ploggingdev.com',
                         ['ploggingdev@gmail.com'],
                         fail_silently=False,
                         )

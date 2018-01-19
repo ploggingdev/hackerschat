@@ -15,7 +15,7 @@ import time, datetime
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
-from boredhackers import celery
+from hackerschat import celery
 
 @channel_session_user_from_http
 def chat_connect(message, topic_name):
