@@ -74,7 +74,7 @@ class ChatArchive(View):
         message = "Choose a date between {} and {} to view the chat archive:".format(min_date.strftime('%b-%d-%Y'), now.strftime('%b-%d-%Y'))
         if error_message != None:
             return render(request, self.template_name, {'topic' : topic, 'error_message' : error_message, 'message' : message})
-        chat_messages = ChatMessage.objects.filter(created__gte=given_date).filter(created__lte=given_date + datetime.timedelta(days=1))
+        chat_messages = ChatMessage.objects.filter(created__gte=given_date).filter(created__lte=given_date + datetime.timedelta(days=1)).order_by('created')
         # next/prev links
         if given_date - datetime.timedelta(days=1) < min_date:
             prev_page = None
