@@ -3,11 +3,12 @@ import os
 from celery import Celery, shared_task
 from django.core.cache import cache
 from django.conf import settings
-from channels import Group
 import json
 import time
 import requests
 from django.core.exceptions import ObjectDoesNotExist
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hackerschat.settings')
@@ -41,6 +42,7 @@ def prune_redis_user_list():
 
 @app.task(time_limit=20)
 def broadcast_presence():
+    channel_layer = get_channel_layer()
     prune_redis_user_list()
     update_presence_data()
     user_list = cache.get('user_list')
@@ -48,6 +50,7 @@ def broadcast_presence():
     topic_anon_count = cache.get('topic_anon_count')
     topics = cache.get('topics')
     for topic_name in topics:
+        '''
         Group(topic_name).send({
             'text': json.dumps({
                 'type': 'presence',
@@ -58,6 +61,18 @@ def broadcast_presence():
                 }
             })
         })
+        '''
+        async_to_sync(channel_layer.group_send)(
+            topic_name,
+            {
+                "type": "presence.data",
+                'payload': {
+                    'channel_name': topic_name,
+                    'members': list(topic_users[topic_name]),
+                    'lurkers': topic_anon_count[topic_name],
+                }
+            },
+        )
 
 @app.task(time_limit=10)
 def update_presence_data():

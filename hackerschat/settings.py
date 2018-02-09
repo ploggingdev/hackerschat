@@ -145,11 +145,10 @@ POSTMARK = {
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [os.environ.get('redis_url', 'redis://localhost:6379')],
         },
-        "ROUTING": "mainapp.routing.channel_routing",
     },
 }
 
@@ -170,3 +169,5 @@ LAST_SEEN_LIMIT = 30
 RECAPTCHA_SECRET_KEY = os.environ['hackerschat_recaptcha_secret_key']
 
 TOXICITY_ENDPOINT = os.environ['hackerschat_toxicity_endpoint']
+
+ASGI_APPLICATION = "mainapp.routing.application"

@@ -45,7 +45,7 @@ $(function() {
             }, 10000);
             return;
         }
-        if(data.type == "presence"){
+        if(data.message_type == "presence"){
             //lurkers count
             var lurkers = data.payload.lurkers;
             $('#lurkers-online').text(lurkers);
@@ -189,9 +189,12 @@ $(function() {
         scrollbacksock.send(JSON.stringify(message));
         return false;
     });
-    
+
     //hearbeat
     setInterval(function() {
-        chatsock.send(JSON.stringify("heartbeat"));
+        var message = {
+            heartbeat : true
+        }
+        chatsock.send(JSON.stringify(message));
     }, 10000);
 });
