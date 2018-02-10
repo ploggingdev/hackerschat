@@ -81,6 +81,10 @@ $(function() {
             }
             return;
         }
+        if(data.message_type == "scrollback"){
+            update_scrollback(data.messages, data.previous_id);
+            return;
+        }
         var chat = $("#chat");
         var scroll_top = true;
         var new_message_notice = $("#new_message_element");
@@ -143,16 +147,9 @@ $(function() {
         return false;
     });
 
-    //temporarily hardcoded
-    var scrollbacksock = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + window.location.pathname+ "topics/general/chat/scrollback/");
+    function update_scrollback(new_messages, previous_id) {
 
-    scrollbacksock.onmessage = function(message) {
-
-        var data = JSON.parse(message.data);
-
-        new_messages = data.messages
-
-        last_id = data.previous_id
+        last_id = previous_id;
         
         if(last_id == -1){
             $("#load_old_messages").remove();
@@ -180,13 +177,13 @@ $(function() {
             chat.prepend(ele)
         }
 
-    };
+    }
 
     $("#load_old_messages").on("click", function(event) {
         var message = {
             last_message_id: $('#last_message_id').val()
         }
-        scrollbacksock.send(JSON.stringify(message));
+        chatsock.send(JSON.stringify(message));
         return false;
     });
 

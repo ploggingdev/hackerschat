@@ -87,7 +87,8 @@ class ChatConsumer(JsonWebsocketConsumer):
             return
         message = content.get('message', None)
         heartbeat = content.get('heartbeat', None)
-        if message == None and heartbeat == None:
+        last_message_id = content.get('last_message_id', None)
+        if message == None and heartbeat == None and last_message_id == None:
             return
         #check for hearbeat
         if heartbeat:
@@ -110,6 +111,38 @@ class ChatConsumer(JsonWebsocketConsumer):
                 if not user_updated:
                     user_list.append(user_info)
                     cache.set('user_list', user_list)
+            return
+        #scrollback
+        if last_message_id:
+            chat_queryset = ChatMessage.objects.filter(topic=topic).filter(id__lte=last_message_id).order_by("-created")[:10]
+            chat_message_count = len(chat_queryset)
+            if chat_message_count > 0:
+                first_message_id = chat_queryset[len(chat_queryset)-1].id
+            else:
+                first_message_id = -1
+            previous_id = -1
+            if first_message_id != -1:
+                try:
+                    previous_id = ChatMessage.objects.filter(topic=topic).filter(pk__lt=first_message_id).order_by("-pk")[:1][0].id
+                except IndexError:
+                    previous_id = -1
+
+            chat_messages = reversed(chat_queryset)
+            cleaned_chat_messages = list()
+            for item in chat_messages:
+                current_message = item.message_html
+                user_profile_url = reverse('user_auth:public_user_profile', args=[item.user.username])
+                cleaned_item = {'user' : item.user.username, 'message' : current_message, 'user_profile_url' : user_profile_url}
+                cleaned_chat_messages.append(cleaned_item)
+
+            my_dict = { 'messages' : cleaned_chat_messages, 'previous_id' : previous_id }
+            self.send_json(
+                {
+                    'message_type' : 'scrollback',
+                    'messages' : cleaned_chat_messages,
+                    'previous_id' : previous_id,
+                },
+            )
             return
         #ignore message if user is not authenticated
         if not self.scope["user"].is_authenticated:
@@ -177,62 +210,3 @@ class ChatConsumer(JsonWebsocketConsumer):
                 if item['reply_channel'] == user_info['reply_channel']:
                     user_list.remove(item)
             cache.set('user_list', user_list)
-
-class ScrollbackConsumer(JsonWebsocketConsumer):
-
-    def connect(self):
-        topic_name = self.scope['url_route']['kwargs']['topic_name']
-        try:
-            topic = Topic.objects.get(name=topic_name)
-        except ObjectDoesNotExist:
-            self.close()
-            return
-        self.accept()
-
-    def receive_json(self, content):
-        topic_name = self.scope['url_route']['kwargs']['topic_name']
-        try:
-            topic = Topic.objects.get(name=topic_name)
-        except ObjectDoesNotExist:
-            return
-        if type(content) is not dict:
-            return
-        last_message_id = content.get('last_message_id', None)
-        if last_message_id == None:
-            return
-        chat_queryset = ChatMessage.objects.filter(topic=topic).filter(id__lte=last_message_id).order_by("-created")[:10]
-        chat_message_count = len(chat_queryset)
-        if chat_message_count > 0:
-            first_message_id = chat_queryset[len(chat_queryset)-1].id
-        else:
-            first_message_id = -1
-        previous_id = -1
-        if first_message_id != -1:
-            try:
-                previous_id = ChatMessage.objects.filter(topic=topic).filter(pk__lt=first_message_id).order_by("-pk")[:1][0].id
-            except IndexError:
-                previous_id = -1
-
-        chat_messages = reversed(chat_queryset)
-        cleaned_chat_messages = list()
-        for item in chat_messages:
-            current_message = item.message_html
-            user_profile_url = reverse('user_auth:public_user_profile', args=[item.user.username])
-            cleaned_item = {'user' : item.user.username, 'message' : current_message, 'user_profile_url' : user_profile_url}
-            cleaned_chat_messages.append(cleaned_item)
-
-        my_dict = { 'messages' : cleaned_chat_messages, 'previous_id' : previous_id }
-        self.send_json(
-            {
-                'messages' : cleaned_chat_messages,
-                'previous_id' : previous_id,
-            },
-        )
-
-    def disconnect(self, code):
-        topic_name = self.scope['url_route']['kwargs']['topic_name']
-        try:
-            topic = Topic.objects.get(name=topic_name)
-        except ObjectDoesNotExist:
-            return
-        async_to_sync(self.channel_layer.group_discard)(topic_name, self.channel_name)
