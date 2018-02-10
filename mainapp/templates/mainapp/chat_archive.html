@@ -28,7 +28,7 @@
             <div class="col-md-8 offset-md-2 text-left">
                 <p class="text-left"><strong>Time Zone : UTC</strong></p>
                 <br/>
-                <ul class="list-unstyled">
+                <ul class="list-unstyled" style="word-wrap:break-word;">
                     {% for message in chat_messages %}
                         <li><i>{{ message.created }}</i> <strong>{{ message.user }} : </strong>{{ message.message_html | safe }}</li>
                         <br/>
