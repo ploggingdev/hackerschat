@@ -49,6 +49,7 @@ def broadcast_presence():
     topic_users = cache.get('topic_users')
     topic_anon_count = cache.get('topic_anon_count')
     topics = cache.get('topics')
+    return
     for topic_name in topics:
         '''
         Group(topic_name).send({

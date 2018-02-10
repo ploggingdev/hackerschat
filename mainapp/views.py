@@ -55,7 +55,7 @@ class ChatArchive(View):
             topic = Topic.objects.get(name=topic_name)
         except ObjectDoesNotExist:
             raise Http404("Topic does not exist")
-        first_message = ChatMessage.objects.earliest('created')
+        first_message = ChatMessage.objects.filter(topic=topic).earliest('created')
         now = timezone.now()
         min_date = datetime.datetime(first_message.created.year, first_message.created.month, first_message.created.day, tzinfo=now.tzinfo)
         given_date = request.GET.get('date', None)
@@ -74,7 +74,7 @@ class ChatArchive(View):
         message = "Choose a date between {} and {} to view the chat archive:".format(min_date.strftime('%b-%d-%Y'), now.strftime('%b-%d-%Y'))
         if error_message != None:
             return render(request, self.template_name, {'topic' : topic, 'error_message' : error_message, 'message' : message})
-        chat_messages = ChatMessage.objects.filter(created__gte=given_date).filter(created__lte=given_date + datetime.timedelta(days=1)).order_by('created')
+        chat_messages = ChatMessage.objects.filter(topic=topic).filter(created__gte=given_date).filter(created__lte=given_date + datetime.timedelta(days=1)).order_by('created')
         # next/prev links
         if given_date - datetime.timedelta(days=1) < min_date:
             prev_page = None
@@ -87,3 +87,34 @@ class ChatArchive(View):
         #format date
         given_date = given_date.strftime('%b-%d-%Y')
         return render(request, self.template_name, {'topic' : topic, 'chat_messages' : chat_messages, 'date' : given_date, 'error_message' : error_message, 'message' : message, 'prev_page' : prev_page, 'next_page' : next_page})
+
+class ChatView(View):
+    template_name = 'mainapp/chat_room.html'
+
+    def get(self, request, topic_name):
+        """
+        Chat room
+        """
+
+        topic = Topic.objects.get(name=topic_name)
+
+        # We want to show the last 10 messages, ordered most-recent-last
+        chat_queryset = ChatMessage.objects.filter(topic=topic).order_by("-created")[:30]
+        chat_message_count = len(chat_queryset)
+        if chat_message_count > 0:
+            first_message_id = chat_queryset[len(chat_queryset)-1].id
+        else:
+            first_message_id = -1
+        previous_id = -1
+        if first_message_id != -1:
+            try:
+                previous_id = ChatMessage.objects.filter(topic=topic).filter(pk__lt=first_message_id).order_by("-pk")[:1][0].id
+            except IndexError:
+                previous_id = -1
+        chat_messages = reversed(chat_queryset)
+        
+        return render(request, self.template_name, {
+            'topic': topic,
+            'chat_messages': chat_messages,
+            'first_message_id' : previous_id
+        })
