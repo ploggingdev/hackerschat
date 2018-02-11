@@ -21,7 +21,7 @@
             <h2 class="form-signin-heading">Signup</h2>
 
             <label for="{{ form.username.id_for_label }}" class="sr-only">Username</label> 
-            {{ form.username |attr:"placeholder:Username" |add_class:"form-control" }}
+            {{ form.username |attr:"placeholder:Username" |add_class:"form-control" |attr:"autofocus" }}
 
             <label for="{{ form.email.id_for_label }}" class="sr-only">Email</label> 
             {{ form.email |attr:"placeholder:Email" |add_class:"form-control" }}
