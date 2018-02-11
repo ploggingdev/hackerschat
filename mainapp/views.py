@@ -7,6 +7,9 @@ from django.http import Http404
 import datetime
 from django.utils import timezone
 from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from mainapp.forms import CreateRoomForm
+from django.contrib import messages
 
 class IndexView(View):
     template_name = 'mainapp/home_page.html'
@@ -118,3 +121,28 @@ class ChatView(View):
             'chat_messages': chat_messages,
             'first_message_id' : previous_id
         })
+
+class CreateRoom(LoginRequiredMixin, View):
+    form_class = CreateRoomForm
+    template_name = "mainapp/create_room.html"
+
+    def get(self, request):
+        form = self.form_class()
+        return render(request, self.template_name, {'form' : form})
+    
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            topic_name = form.cleaned_data['name']
+            topic_count = Topic.objects.filter(name=topic_name).count()
+            if topic_count == 0:
+                topic = Topic(name=topic_name, title=topic_name)
+                topic.save()
+                messages.success(request ,"Room has been created successfully")
+                return redirect(reverse("mainapp:chat_room", args=[topic_name]))
+            else:
+                messages.error(request ,"Topic already exists")
+                return redirect(reverse("mainapp:chat_room", args=[topic_name]))
+        else:
+            messages.error(request, "Invalid form data. Only lower case letters are allowed.")
+            return render(request, self.template_name, {'form' : self.form_class()})

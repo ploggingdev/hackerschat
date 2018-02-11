@@ -6,6 +6,10 @@ import markdown
 from django.conf import settings
 from django.utils.html import escape
 import re
+from django.core.validators import RegexValidator
+
+class CreateRoomForm(forms.Form):
+    name = forms.CharField(max_length=100, validators=[RegexValidator(r'^[a-z]+$', "Only lower case letters without spaces are allowed")])
 
 class AdminTopicForm(forms.ModelForm):
     class Meta:
