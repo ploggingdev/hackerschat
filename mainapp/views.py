@@ -154,7 +154,6 @@ class RoomsList(View):
 
     def get(self, request):
         rooms = Topic.objects.all().order_by('-created')
-        count = len(rooms)
 
         paginator = Paginator(rooms, self.paginate_by)
 
@@ -169,3 +168,29 @@ class RoomsList(View):
             current_page_rooms = paginator.page(paginator.num_pages)
 
         return render(request, self.template_name, {'current_page_rooms': current_page_rooms})
+
+class SearchView(View):
+    template_name = "mainapp/search.html"
+    paginate_by = 10
+
+    def get(self, request):
+        search_query = request.GET.get('query', None)
+        if search_query == None:
+            messages.error(request, "Invalid search query")
+            return render(request, self.template_name, {'current_page_rooms': None, search_query : None})
+
+        rooms = Topic.objects.filter(name__trigram_similar=search_query.lower()) | Topic.objects.filter(name__icontains=search_query.lower())
+
+        paginator = Paginator(rooms, self.paginate_by)
+
+        page = request.GET.get('page', 1)
+        try:
+            current_page_rooms = paginator.page(page)
+        except PageNotAnInteger:
+            messages.error(request, "Invalid page number, showing the first page instead.")
+            current_page_rooms = paginator.page(1)
+        except EmptyPage:
+            messages.error(request, "Invalid page number, showing the last page instead.")
+            current_page_rooms = paginator.page(paginator.num_pages)
+
+        return render(request, self.template_name, {'current_page_rooms': current_page_rooms, 'search_query' : search_query })

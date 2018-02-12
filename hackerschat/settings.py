@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'channels',
     'reversion',
+    'django.contrib.postgres',
 ]
 
 MIDDLEWARE = [
