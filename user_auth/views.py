@@ -88,10 +88,10 @@ class RegisterView(View):
             new_password = form.cleaned_data['password']
             new_email = form.cleaned_data['email']
 
-            if get_user_model().objects.filter(username=new_username).exists():
+            if get_user_model().objects.filter(username__iexact=new_username).exists():
                 messages.error(request, "Username not available, choose a different one")
                 return render(request, self.template_name, {'form' : form, 'next' : request.POST.get('next')})
-            if new_email != '' and get_user_model().objects.filter(email=new_email).exists():
+            if new_email != '' and get_user_model().objects.filter(email__iexact=new_email).exists():
                 messages.error(request, "Email not available, choose a different one")
                 return render(request, self.template_name, {'form' : form, 'next' : request.POST.get('next')})
             
