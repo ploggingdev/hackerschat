@@ -10,4 +10,5 @@ urlpatterns = [
     path('createroom/', views.CreateRoom.as_view(), name='create_room'),
     path('topics/<str:topic_name>/', views.ChatView.as_view(), name='chat_room'),
     path('topics/<str:topic_name>/chat/archive/', views.ChatArchive.as_view(), name='chat_archive'),
+    path('roomslist/', views.RoomsList.as_view(), name='rooms_list'),
 ]

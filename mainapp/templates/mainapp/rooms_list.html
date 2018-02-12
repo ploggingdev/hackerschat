@@ -1,0 +1,57 @@
+{% extends "registration/base.html" %} 
+
+{% block title %}Chat Rooms - Page {{ current_page_rooms.number }}{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <br />
+    {% include "registration/errors_and_messages.html" %}
+
+    <h3>Chat Rooms - Page {{ current_page_rooms.number }}</h3>
+
+    <br /> 
+    {% if current_page_rooms %}
+
+    <div class="row text-left">
+        <div class="col-md-4 offset-md-4">
+            <ul class="list-group">
+                {% for current_page_room in current_page_rooms %}
+                <li class="list-group-item">
+                    <a href="{% url 'mainapp:chat_room' current_page_room.name %}">{{ current_page_room.name }}</a>
+                </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+    </div>
+
+    {% if current_page_rooms.paginator.num_pages > 0 %}
+    <br/>
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if current_page_rooms.has_previous %}
+            <li class="page-item">
+            <a class="page-link" href="{{ request.path }}?page={{ current_page_rooms.previous_page_number }}" >Previous</a>
+            </li>
+            {% endif %}
+            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">{{ current_page_rooms.number }} of {{ current_page_rooms.paginator.num_pages }}</a></li>
+            {% if current_page_rooms.has_next %}
+            <li class="page-item">
+            <a class="page-link" href="{{ request.path }}?page={{ current_page_rooms.next_page_number }}">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    {% endif %}
+    
+    {% else %}
+    <p>No chat rooms have been created.</p>
+    {% endif %}
+
+    <br />
+
+</div>
+
+{% endblock %}

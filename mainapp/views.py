@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from mainapp.forms import CreateRoomForm
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 class IndexView(View):
     template_name = 'mainapp/home_page.html'
@@ -146,3 +147,25 @@ class CreateRoom(LoginRequiredMixin, View):
         else:
             messages.error(request, "Invalid form data. Only lower case letters are allowed.")
             return render(request, self.template_name, {'form' : self.form_class()})
+
+class RoomsList(View):
+    template_name = "mainapp/rooms_list.html"
+    paginate_by = 10
+
+    def get(self, request):
+        rooms = Topic.objects.all().order_by('-created')
+        count = len(rooms)
+
+        paginator = Paginator(rooms, self.paginate_by)
+
+        page = request.GET.get('page', 1)
+        try:
+            current_page_rooms = paginator.page(page)
+        except PageNotAnInteger:
+            messages.error(request, "Invalid page number, showing the first page instead.")
+            current_page_rooms = paginator.page(1)
+        except EmptyPage:
+            messages.error(request, "Invalid page number, showing the last page instead.")
+            current_page_rooms = paginator.page(paginator.num_pages)
+
+        return render(request, self.template_name, {'current_page_rooms': current_page_rooms})
