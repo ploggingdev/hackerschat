@@ -9,8 +9,11 @@
     {% include "registration/errors_and_messages.html" %}
 
     <h3>Chat Rooms - Page {{ current_page_rooms.number }}</h3>
+    <br/>
 
-    <br /> 
+    <a class="btn btn-primary" href="{% url 'mainapp:create_room' %}" role="button">Create Room</a>
+
+    <br/><br/> 
     {% if current_page_rooms %}
 
     <div class="row text-left">
