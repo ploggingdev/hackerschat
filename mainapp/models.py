@@ -12,8 +12,8 @@ class Topic(models.Model):
     """
 
     #Fields
-    name = models.CharField(max_length=100, unique=True, validators=[RegexValidator(r'^[a-z]+$', "Only lower case letters without spaces are allowed")])
-    title = models.CharField(max_length=100, null=True, blank=True ,validators=[RegexValidator(r'^[a-zA-Z0-9 ]+$', "Only lower case, upper case letters, numbers and spaces are allowed")])
+    name = models.CharField(max_length=20, unique=True, validators=[RegexValidator(r'^[a-z]+$', "Only lower case letters without spaces are allowed")])
+    title = models.CharField(max_length=25, null=True, blank=True ,validators=[RegexValidator(r'^[a-zA-Z0-9 ]+$', "Only lower case, upper case letters, numbers and spaces are allowed")])
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
