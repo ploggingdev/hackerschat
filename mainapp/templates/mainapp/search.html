@@ -15,7 +15,7 @@
             <br/><br/> 
             <form class="form-inline justify-content-center" action="{% url 'mainapp:search_view' %}" method="get">
                 <label class="sr-only" for="query">Enter search query</label>
-                <input type="text" class="form-control mb-2 mr-sm-2" id="query" name="query" placeholder="Enter search query" autofocus>
+                <input type="text" class="form-control mb-2 mr-sm-2" id="query" name="query" placeholder="Enter search query" maxlength="20" autofocus>
                 <button type="submit" class="btn btn-primary mb-2">Search</button>
             </form>
         
