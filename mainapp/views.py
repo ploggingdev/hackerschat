@@ -175,7 +175,7 @@ class SearchView(View):
 
     def get(self, request):
         search_query = request.GET.get('query', None)
-        if search_query == None:
+        if search_query == None or len(search_query) > 20:
             messages.error(request, "Invalid search query")
             return render(request, self.template_name, {'current_page_rooms': None, search_query : None})
 
