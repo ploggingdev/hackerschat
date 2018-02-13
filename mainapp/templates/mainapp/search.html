@@ -1,5 +1,9 @@
 {% extends "registration/base.html" %} 
 
+{% load static %}
+
+{% load custom_tags %}
+
 {% block title %}Chat Rooms Search Results - Page {{ current_page_rooms.number }}{% endblock %}
 
 {% block content %}
@@ -18,8 +22,8 @@
                 <input type="text" class="form-control mb-2 mr-sm-2" id="query" name="query" placeholder="Enter search query" maxlength="20" autofocus>
                 <button type="submit" class="btn btn-primary mb-2">Search</button>
             </form>
-        
             <br/>
+            <div id="server_messages"></div>
         </div>
     </div>
 
@@ -31,6 +35,13 @@
                 {% for current_page_room in current_page_rooms %}
                 <li class="list-group-item">
                     <a href="{% url 'mainapp:chat_room' current_page_room.name %}">{{ current_page_room.name }}</a>
+                    <button id="{{ current_page_room.name }}-subscription" type="button" class="btn btn-link float-right" onclick="subscription('{{ current_page_room.name }}')">
+                        {% if user.is_authenticated %}
+                            {{ current_page_room|subscription_text:user.username }}
+                        {% else %}
+                            Subscribe
+                        {% endif %}
+                    </button>
                 </li>
                 {% endfor %}
 
@@ -65,5 +76,11 @@
     <br />
 
 </div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+<script type="text/javascript" src='{% static "js/chatroom_subscribe.js" %}'></script>
 
 {% endblock %}

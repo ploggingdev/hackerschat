@@ -12,4 +12,5 @@ urlpatterns = [
     path('topics/<str:topic_name>/chat/archive/', views.ChatArchive.as_view(), name='chat_archive'),
     path('roomslist/', views.RoomsList.as_view(), name='rooms_list'),
     path('search/', views.SearchView.as_view(), name='search_view'),
+    path('chatsubscription/', views.ChatRoomSubscription.as_view(), name='chat_subscription'),
 ]

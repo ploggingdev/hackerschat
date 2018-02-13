@@ -1,9 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
-from .models import Topic, ChatMessage
+from .models import Topic, ChatMessage, Subscription
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
+from django.http import Http404, JsonResponse
 import datetime
 from django.utils import timezone
 from django.urls import reverse
@@ -100,7 +100,10 @@ class ChatView(View):
         Chat room
         """
 
-        topic = Topic.objects.get(name=topic_name)
+        try:
+            topic = Topic.objects.get(name=topic_name)
+        except ObjectDoesNotExist:
+            raise Http404("Topic does not exist")
 
         # We want to show the last 10 messages, ordered most-recent-last
         chat_queryset = ChatMessage.objects.filter(topic=topic).order_by("-created")[:30]
@@ -194,3 +197,39 @@ class SearchView(View):
             current_page_rooms = paginator.page(paginator.num_pages)
 
         return render(request, self.template_name, {'current_page_rooms': current_page_rooms, 'search_query' : search_query })
+
+class ChatRoomSubscription(View):
+
+    def post(self, request):
+        if not request.user.is_authenticated:
+            return JsonResponse({'error' : 'Please login to subscribe.' }, status=400)
+
+        topic_name = request.POST.get('topic_name', None)
+        if topic_name == None:
+            return JsonResponse({'error' : 'Invalid request.' }, status=400)
+
+        try:
+            topic = Topic.objects.get(name=topic_name)
+        except ObjectDoesNotExist:
+            return JsonResponse({'error' : 'Invalid request.' }, status=404)
+        
+        user = request.user
+
+        try:
+            subscription = Subscription.objects.get(topic=topic, user=user)
+            if subscription.deleted:
+                subscription.deleted = False
+                message = "You have subscribed to {}".format(topic.name)
+                button_text = "Unsubscribe"
+            else:
+                subscription.deleted = True
+                message = "You have unsubscribed from {}".format(topic.name)
+                button_text = "Subscribe"
+            subscription.save()
+        except ObjectDoesNotExist:
+            subscription = Subscription(topic=topic, user=user)
+            subscription.save()
+            message = "You have subscribed to {}".format(topic.name)
+            button_text = "Unsubscribe"
+        
+        return JsonResponse({'message' : message, 'button_text' : button_text })

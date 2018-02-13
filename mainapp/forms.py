@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Topic, ChatMessage
+from .models import Topic, ChatMessage, Subscription
 import bleach
 import markdown
 from django.conf import settings
@@ -45,3 +45,8 @@ class AdminChatMessageForm(forms.ModelForm):
         self.cleaned_data['message_html'] = message_html
 
         return self.cleaned_data
+
+class AdminSubscriptionForm(forms.ModelForm):
+    class Meta:
+        model = Subscription
+        fields = ['topic', 'user', 'deleted']
