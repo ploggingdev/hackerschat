@@ -39,7 +39,7 @@ $(function() {
             fail_text.innerText = data.payload.message;
             fail_text.setAttribute('class', 'alert alert-danger');
             fail_text.setAttribute('role', 'alert');
-            $('#chat-form-container').append(fail_text);
+            $('#chat-form-container').prepend(fail_text);
             setTimeout(function () {
                 fail_text.remove();
             }, 10000);
