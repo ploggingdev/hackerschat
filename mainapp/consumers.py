@@ -86,7 +86,8 @@ class ChatConsumer(JsonWebsocketConsumer):
             self.scrollback(topic, last_message_id)
             return
         #chat message
-        self.handle_chat_message(message, topic)
+        if message:
+            self.handle_chat_message(message, topic)
 
     def disconnect(self, code):
         topic_name = self.scope['url_route']['kwargs']['topic_name']
@@ -126,6 +127,10 @@ class ChatConsumer(JsonWebsocketConsumer):
                 cache.set('user_list', user_list)
     
     def scrollback(self, topic, last_message_id):
+        try:
+            last_message_id = int(last_message_id)
+        except ValueError:
+            return
         chat_queryset = ChatMessage.objects.filter(topic=topic).filter(id__lte=last_message_id).order_by("-created")[:10]
         chat_message_count = len(chat_queryset)
         if chat_message_count > 0:
