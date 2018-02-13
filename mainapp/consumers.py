@@ -157,6 +157,14 @@ class ChatConsumer(JsonWebsocketConsumer):
         )
     
     def handle_chat_message(self, message, topic):
+        if len(message) > 1500:
+            self.send_json({
+                'type': 'error',
+                'payload': {
+                    'message': "Maximum message size is 1500 characters.",
+                }
+            })
+            return
         topic_name = topic.name
         #ignore message if user is not authenticated
         if not self.scope["user"].is_authenticated or not message:
