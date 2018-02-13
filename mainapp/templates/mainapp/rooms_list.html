@@ -10,17 +10,14 @@
             <br />
             {% include "registration/errors_and_messages.html" %}
 
-            <h3>Chat Rooms - Page {{ current_page_rooms.number }}</h3>
-            <br/>
-
-            <a class="btn btn-primary" href="{% url 'mainapp:create_room' %}" role="button">Create Room</a>
+            <em>Chat rooms list</em>
 
             <br/><br/> 
 
-            <form action="{% url 'mainapp:search_view' %}" method="get">
-                <input name="query" class="form-control" placeholder="Enter search query" autofocus/>
-                <br/>
-                <button type="submit" class="btn btn-primary">Search</button>
+            <form class="form-inline justify-content-center" action="{% url 'mainapp:search_view' %}" method="get">
+                <label class="sr-only" for="query">Enter search query</label>
+                <input type="text" class="form-control mb-2 mr-sm-2" id="query" name="query" placeholder="Enter search query" autofocus>
+                <button type="submit" class="btn btn-primary mb-2">Search</button>
             </form>
             
             <br/>
