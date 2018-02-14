@@ -10,11 +10,11 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-6 offset-sm-3 col-lg-4 offset-lg-4">
+        <div class="col-md-6 offset-md-3 col-lg-4 offset-lg-4">
             <br />
             {% include "registration/errors_and_messages.html" %}
 
-            <em>Chat rooms list</em>
+            <strong>Chat rooms list</strong>
 
             <br/><br/> 
 
@@ -30,7 +30,7 @@
     {% if current_page_rooms %}
 
     <div class="row text-left">
-        <div class="col-md-4 offset-md-4">
+        <div class="col-md-6 offset-md-3 col-lg-4 offset-lg-4">
             <ul class="list-group">
                 {% for current_page_room in current_page_rooms %}
                 <li class="list-group-item">
