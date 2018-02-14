@@ -5,7 +5,7 @@
 {% block content %}
 <br/>
 <style>
-    #chat-user-list{
+    #chat-user-list, #room-list{
         overflow-y: scroll;
         max-height: 70vh;
         word-wrap:break-word;
@@ -54,7 +54,7 @@
                 {% endfor %}
             </ul>
         </div>
-        <div class="col-md-2 d-none d-md-block">
+        <div class="col-md-2 d-none d-md-block" id="room-list">
             <a class="btn btn-light" href="{% url 'mainapp:chat_archive' 'general' %}" role="button">Chat logs</a>
             <ul class="list-unstyled">
                 {% for room in subscribed_rooms %}
