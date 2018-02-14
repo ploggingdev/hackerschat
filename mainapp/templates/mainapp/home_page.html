@@ -9,6 +9,8 @@
         overflow-y: scroll;
         max-height: 70vh;
         word-wrap:break-word;
+        padding-left: 20px;
+        padding-right: 20px;
     }
     #all_messages{
         overflow-y: scroll;
@@ -24,7 +26,7 @@
     {% include "registration/errors_and_messages.html" %}
     <div class="d-none d-md-block list-unstyled"><br/></div>
     <div class="row">
-        <div class="col-md-2" id="chat-user-list">
+        <div class="col-md-2 text-left" id="chat-user-list">
             <p>
                 <span id="users-online" class="text-primary">0</span> <span id="users-online-indicator">users</span> online
             </p>
@@ -56,7 +58,7 @@
         </div>
         <div class="col-md-2 d-none d-md-block" id="room-list">
             <a class="btn btn-light" href="{% url 'mainapp:chat_archive' 'general' %}" role="button">Chat logs</a>
-            <ul class="list-unstyled">
+            <ul class="list-unstyled text-left">
                 {% for room in subscribed_rooms %}
                 <br/>
                 <li>
