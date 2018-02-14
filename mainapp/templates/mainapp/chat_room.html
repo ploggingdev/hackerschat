@@ -24,7 +24,7 @@
     {% include "registration/errors_and_messages.html" %}
     <div class="d-none d-md-block list-unstyled"><br/></div>
     <div class="row">
-            <div class="col-md-2 offset-md-1 text-left" id="chat-user-list">
+            <div class="col-md-2" id="chat-user-list">
                 <p>
                     <span id="users-online" class="text-primary">0</span> <span id="users-online-indicator">users</span> online
                 </p>
@@ -54,10 +54,23 @@
                 {% endfor %}
             </ul>
         </div>
+        <div class="col-md-2 d-none d-md-block">
+            <a class="btn btn-primary" href="{% url 'mainapp:create_room' %}" role="button">+ Create Room</a>
+            <br/><br/>
+            <a class="btn btn-light" href="{% url 'mainapp:chat_archive' topic.name %}" role="button">Logs</a>
+            <ul class="list-unstyled">
+                {% for room in subscribed_rooms %}
+                <br/>
+                <li>
+                    <a href="{% url 'mainapp:chat_room' room.topic.name %}">{{ room.topic.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
     </br>
     <div class="row">
-        <div class="col-md-8 offset-md-3" id="chat-form-container">
+        <div class="col-md-8 offset-md-2" id="chat-form-container">
             <form id="chatform" autocomplete="off">
                 <div class="form-row">
                     <div class="col-9">

@@ -38,11 +38,13 @@ class IndexView(View):
             except IndexError:
                 previous_id = -1
         chat_messages = reversed(chat_queryset)
-        
+        #subscribed rooms
+        subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
         return render(request, self.template_name, {
             'topic': topic,
             'chat_messages': chat_messages,
-            'first_message_id' : previous_id
+            'first_message_id' : previous_id,
+            'subscribed_rooms' : subscribed_rooms
         })
 
 class AboutView(View):
@@ -119,11 +121,13 @@ class ChatView(View):
             except IndexError:
                 previous_id = -1
         chat_messages = reversed(chat_queryset)
-        
+        #subscribed rooms
+        subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
         return render(request, self.template_name, {
             'topic': topic,
             'chat_messages': chat_messages,
-            'first_message_id' : previous_id
+            'first_message_id' : previous_id,
+            'subscribed_rooms' : subscribed_rooms
         })
 
 class CreateRoom(LoginRequiredMixin, View):
