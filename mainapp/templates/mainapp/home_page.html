@@ -55,8 +55,6 @@
             </ul>
         </div>
         <div class="col-md-2 d-none d-md-block">
-            <a class="btn btn-primary" href="{% url 'mainapp:create_room' %}" role="button">+ Create Room</a>
-            <br/><br/>
             <a class="btn btn-light" href="{% url 'mainapp:chat_archive' 'general' %}" role="button">Logs</a>
             <ul class="list-unstyled">
                 {% for room in subscribed_rooms %}

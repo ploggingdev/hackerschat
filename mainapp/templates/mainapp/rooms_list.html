@@ -17,13 +17,17 @@
             <strong>Chat rooms list</strong>
 
             <br/><br/> 
-
+            <a class="btn btn-primary" href="{% url 'mainapp:create_room' %}" role="button">+ Create Room</a>
+            
+            <br/><br/>
+            <strong>OR</strong>
+            <br/><br/>
             <form class="form-inline justify-content-center" action="{% url 'mainapp:search_view' %}" method="get">
                 <label class="sr-only" for="query">Enter search query</label>
                 <input type="text" class="form-control mb-2 mr-sm-2" id="query" name="query" placeholder="Enter search query" maxlength="20" autofocus>
                 <button type="submit" class="btn btn-primary mb-2">Search</button>
             </form>
-            <br/>
+            <br/><br/>
             <div id="server_messages"></div>
         </div>
     </div>
