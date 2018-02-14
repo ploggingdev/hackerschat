@@ -39,7 +39,10 @@ class IndexView(View):
                 previous_id = -1
         chat_messages = reversed(chat_queryset)
         #subscribed rooms
-        subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
+        if request.user.is_authenticated:
+            subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
+        else:
+            subscribed_rooms = None
         return render(request, self.template_name, {
             'topic': topic,
             'chat_messages': chat_messages,
@@ -122,7 +125,10 @@ class ChatView(View):
                 previous_id = -1
         chat_messages = reversed(chat_queryset)
         #subscribed rooms
-        subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
+        if request.user.is_authenticated:
+            subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
+        else:
+            subscribed_rooms = None
         return render(request, self.template_name, {
             'topic': topic,
             'chat_messages': chat_messages,
