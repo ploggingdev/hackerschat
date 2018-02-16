@@ -154,6 +154,8 @@ class CreateRoom(LoginRequiredMixin, View):
             if topic_count == 0:
                 topic = Topic(name=topic_name, title=topic_name)
                 topic.save()
+                subscription = Subscription(user=request.user, topic=topic)
+                subscription.save()
                 messages.success(request ,"Room has been created successfully")
                 return redirect(reverse("mainapp:chat_room", args=[topic_name]))
             else:
