@@ -15,6 +15,7 @@ from django.conf import settings
 import requests
 from django.contrib.auth.views import LoginView, PasswordResetView
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
+from mainapp.models import Topic, Subscription
 
 class CustomPasswordResetView(PasswordResetView):
     def post(self, request, *args, **kwargs):
@@ -106,6 +107,15 @@ class RegisterView(View):
             user = authenticate(username=new_username, password=new_password)
             userprofile = UserProfile(user=user)
             userprofile.save()
+            #create default room subscriptions
+            for topic_name in settings.DEFAULT_TOPICS:
+                if Topic.objects.filter(name=topic_name).exists():
+                    topic = Topic.objects.get(name=topic_name)
+                else:
+                    topic = Topic(name=topic_name, title=topic_name)
+                    topic.save()
+                subscription = Subscription(user=user, topic=topic)
+                subscription.save()
             if user is not None:
                 login(request, user)
                 redirect_to = request.POST.get('next', reverse('mainapp:index'))

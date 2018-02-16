@@ -172,3 +172,5 @@ RECAPTCHA_SECRET_KEY = os.environ['hackerschat_recaptcha_secret_key']
 TOXICITY_ENDPOINT = os.environ['hackerschat_toxicity_endpoint']
 
 ASGI_APPLICATION = "mainapp.routing.application"
+
+DEFAULT_TOPICS = ['general' ,'bitcoin', 'ethereum', 'programming', 'cryptocurrency']
