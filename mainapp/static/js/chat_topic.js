@@ -49,27 +49,35 @@ $(function() {
             //lurkers count
             var lurkers = data.payload.lurkers;
             $('#lurkers-online').text(lurkers);
+            $('#lurkers-online-modal').text(lurkers);
             if(lurkers == 1){
                 $('#onlookers-online-indicator').text("onlooker");
+                $('#onlookers-online-indicator-modal').text("onlooker");
             }
             else{
                 $('#onlookers-online-indicator').text("onlookers");
+                $('#onlookers-online-indicator-modal').text("onlookers");
             }
 
             //users count count
             var user_list = data.payload.members;
             user_list.sort();
             $('#users-online').text(user_list.length);
+            $('#users-online-modal').text(user_list.length);
             if(user_list.length == 1){
                 $('#users-online-indicator').text("user");
+                $('#users-online-indicator-modal').text("user");
             }
             else{
                 $('#users-online-indicator').text("users");
+                $('#users-online-indicator-modal').text("users");
             }
 
             //update user list
             var user_list_ele = $('#user_list');
             user_list_ele.text("");
+            var user_list_ele_modal = $('#user_list-modal');
+            user_list_ele_modal.text("");
 
             for(i=0; i<user_list.length; i++){
                 var username_ele = document.createElement('p');
@@ -78,6 +86,7 @@ $(function() {
                 var li_user = document.createElement('li');
                 li_user.append(username_ele);
                 user_list_ele.append(li_user);
+                user_list_ele_modal.append(li_user);
             }
             return;
         }
