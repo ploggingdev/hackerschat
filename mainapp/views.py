@@ -11,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from mainapp.forms import CreateRoomForm
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.conf import settings
 
 class IndexView(View):
     template_name = 'mainapp/home_page.html'
@@ -47,7 +48,8 @@ class IndexView(View):
             'topic': topic,
             'chat_messages': chat_messages,
             'first_message_id' : previous_id,
-            'subscribed_rooms' : subscribed_rooms
+            'subscribed_rooms' : subscribed_rooms,
+            'default_rooms' : settings.DEFAULT_TOPICS
         })
 
 class AboutView(View):
@@ -135,7 +137,8 @@ class ChatView(View):
             'topic': topic,
             'chat_messages': chat_messages,
             'first_message_id' : previous_id,
-            'subscribed_rooms' : subscribed_rooms
+            'subscribed_rooms' : subscribed_rooms,
+            'default_rooms' : settings.DEFAULT_TOPICS
         })
 
 class CreateRoom(LoginRequiredMixin, View):

@@ -59,12 +59,21 @@
         <div class="col-md-2 d-none d-md-block" id="room-list">
             <a class="btn btn-light" href="{% url 'mainapp:chat_archive' topic.name %}" role="button">Chat logs</a>
             <ul class="list-unstyled text-left">
-                {% for room in subscribed_rooms %}
-                <br/>
-                <li>
-                    <a href="{% url 'mainapp:chat_room' room.topic.name %}">{{ room.topic.name }}</a>
-                </li>
-                {% endfor %}
+                {% if user.is_authenticated %}
+                    {% for room in subscribed_rooms %}
+                        <br/>
+                        <li>
+                            <a href="{% url 'mainapp:chat_room' room.topic.name %}">{{ room.topic.name }}</a>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    {% for room in default_rooms %}
+                        <br/>
+                        <li>
+                            <a href="{% url 'mainapp:chat_room' room %}">{{ room }}</a>
+                        </li>
+                    {% endfor %}
+                {% endif%}
             </ul>
         </div>
     </div>
