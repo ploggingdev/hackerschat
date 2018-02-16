@@ -86,7 +86,7 @@ $(function() {
                 var li_user = document.createElement('li');
                 li_user.append(username_ele);
                 user_list_ele.append(li_user);
-                user_list_ele_modal.append(li_user);
+                user_list_ele_modal.append(li_user.cloneNode(true));
             }
             return;
         }
