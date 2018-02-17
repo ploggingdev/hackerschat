@@ -49,20 +49,7 @@ def broadcast_presence():
     topic_users = cache.get('topic_users')
     topic_anon_count = cache.get('topic_anon_count')
     topics = cache.get('topics')
-    return
     for topic_name in topics:
-        '''
-        Group(topic_name).send({
-            'text': json.dumps({
-                'type': 'presence',
-                'payload': {
-                    'channel_name': topic_name,
-                    'members': list(topic_users[topic_name]),
-                    'lurkers': topic_anon_count[topic_name],
-                }
-            })
-        })
-        '''
         async_to_sync(channel_layer.group_send)(
             topic_name,
             {
