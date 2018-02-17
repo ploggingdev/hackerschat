@@ -39,7 +39,7 @@
     {% include "registration/errors_and_messages.html" %}
     <div class="row d-md-none">
         <div class="col-6">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userlistModalLong">User list</button>
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#userlistModalLong">User list</button>
             <!-- Modal -->
             <div class="modal fade" id="userlistModalLong" tabindex="-1" role="dialog" aria-labelledby="User list" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -68,7 +68,7 @@
             </div>
         </div>
         <div class="col-6">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#roomlistModalLong">Chat rooms</button>
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#roomlistModalLong">Chat rooms</button>
             <!-- Modal -->
             <div class="modal fade" id="roomlistModalLong" tabindex="-1" role="dialog" aria-labelledby="Chat rooms" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -80,7 +80,7 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <a class="btn btn-light" href="{% url 'mainapp:chat_archive' 'general' %}" role="button">Chat logs</a>
+                            <a class="btn btn-primary" href="{% url 'mainapp:chat_archive' 'general' %}" role="button">Chat logs</a>
                             <ul class="list-unstyled">
                                 {% if user.is_authenticated %}
                                     {% for room in subscribed_rooms %}
@@ -140,7 +140,7 @@
             </ul>
         </div>
         <div class="col-md-2 d-none d-md-block" id="room-list">
-            <a class="btn btn-light" href="{% url 'mainapp:chat_archive' topic.name %}" role="button">Chat logs</a>
+            <a class="btn btn-primary" href="{% url 'mainapp:chat_archive' topic.name %}" role="button">Chat logs</a>
             <ul class="list-unstyled text-left">
                 {% if user.is_authenticated %}
                     {% for room in subscribed_rooms %}
