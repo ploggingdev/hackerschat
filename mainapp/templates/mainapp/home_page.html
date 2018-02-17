@@ -5,6 +5,19 @@
 {% block content %}
 <br/>
 <style>
+    html {
+        position: relative;
+        min-height: 100%;
+    }
+    body {
+        margin-bottom: 60px; /* Margin bottom by footer height */
+    }
+    .footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 60px; /* Set the fixed height of the footer here */
+    }
     #chat-user-list, #room-list{
         overflow-y: scroll;
         max-height: 70vh;
@@ -147,27 +160,29 @@
             </ul>
         </div>
     </div>
-    </br>
-    <div class="row">
-        <div class="col-md-8 offset-md-2" id="chat-form-container">
-            <form id="chatform" autocomplete="off">
-                <div class="form-row">
-                    <div class="col-9">
-                        {% if user.is_authenticated %}
-                        <input id="message" type="text" class="form-control focus_state" placeholder="Enter chat message here" maxlength="1500" required autofocus>
-                        {% else %}
-                        <input class="form-control form-control-lg" id="disabledInput" type="text" placeholder="Please login to chat" readonly>
-                        {% endif %}
+</div>
+<footer class="footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8 offset-md-2" id="chat-form-container">
+                <form id="chatform" autocomplete="off">
+                    <div class="form-row">
+                        <div class="col-9">
+                            {% if user.is_authenticated %}
+                            <input id="message" type="text" class="form-control focus_state" placeholder="Enter chat message here" maxlength="1500" required autofocus>
+                            {% else %}
+                            <input class="form-control form-control-lg" id="disabledInput" type="text" placeholder="Please login to chat" readonly>
+                            {% endif %}
+                        </div>
+                        <div class="col-2">
+                            <button id="go" type="submit" class="btn btn-primary input-lg">Submit</button>
+                        </div>
                     </div>
-                    <div class="col-2">
-                        <button id="go" type="submit" class="btn btn-primary input-lg">Submit</button>
-                    </div>
-                </div>
-            </form>
-            <br/>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+</footer>    
 {% endblock %}
 
 {% block extra_scripts %}
