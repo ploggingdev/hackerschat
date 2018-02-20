@@ -1,6 +1,6 @@
 aioredis==1.0.0
 amqp==2.2.2
-asgiref==2.1.5
+asgiref==2.1.6
 async-timeout==2.0.0
 attrs==17.4.0
 autobahn==17.10.1
