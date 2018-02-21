@@ -55,6 +55,33 @@ class CustomLoginView(LoginView):
             return render(request, self.template_name, {'form' : AuthenticationForm(initial={'username' : request.POST.get('username')}), 'next' : request.POST.get('next')})
         return super().post(request, *args, **kwargs)
 
+class CustomAdminLoginView(LoginView):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            if request.user.is_superuser:
+                return redirect(reverse('admin:index'))
+            else:
+                messages.error(request ,"You don't have permission to access the admin section.")
+                return redirect(reverse('mainapp:index'))
+        return super().post(request, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        #recaptcha validation
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        if recaptcha_response == '':
+            messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+            return render(request, self.template_name, {'form' : AuthenticationForm(initial={'username' : request.POST.get('username')}), 'next' : request.POST.get('next')})
+        data = {
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+
+        if not result['success']:
+            messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+            return render(request, self.template_name, {'form' : AuthenticationForm(initial={'username' : request.POST.get('username')}), 'next' : request.POST.get('next')})
+        return super().post(request, *args, **kwargs)
+
 class RegisterView(View):
     form_class  = RegisterForm
     template_name = 'registration/register.html'

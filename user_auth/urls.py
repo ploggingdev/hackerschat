@@ -13,6 +13,10 @@ urlpatterns = [
         views.CustomLoginView.as_view(redirect_authenticated_user=True), name="login",
     ),
     path(
+        'admin/login/',
+        views.CustomAdminLoginView.as_view(), name="admin_login"
+        ),
+    path(
         'logout/',
         auth_views.LogoutView.as_view(), name="logout"
     ),
