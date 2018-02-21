@@ -63,7 +63,7 @@ class CustomAdminLoginView(LoginView):
             else:
                 messages.error(request ,"You don't have permission to access the admin section.")
                 return redirect(reverse('mainapp:index'))
-        return super().post(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
     def post(self, request, *args, **kwargs):
         #recaptcha validation
         recaptcha_response = request.POST.get('g-recaptcha-response')
