@@ -13,7 +13,7 @@ channels==2.0.2
 channels-redis==2.1.0
 chardet==3.0.4
 constantly==15.1.0
-daphne==2.0.3
+daphne==2.0.4
 Django==2.0.2
 django-redis==4.8.0
 django-reversion==2.0.12
