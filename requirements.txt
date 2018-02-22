@@ -10,7 +10,7 @@ bleach==2.1.2
 celery==4.1.0
 certifi==2017.11.5
 channels==2.0.2
-channels-redis==2.0.3
+channels-redis==2.1.0
 chardet==3.0.4
 constantly==15.1.0
 daphne==2.0.3
