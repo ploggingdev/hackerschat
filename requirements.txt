@@ -1,6 +1,6 @@
 aioredis==1.0.0
 amqp==2.2.2
-asgiref==2.3.0
+asgiref==2.3.2
 async-timeout==2.0.1
 attrs==17.4.0
 autobahn==18.4.1
@@ -13,7 +13,7 @@ channels==2.1.1
 channels-redis==2.2.1
 chardet==3.0.4
 constantly==15.1.0
-daphne==2.1.1
+daphne==2.1.2
 Django==2.0.5
 django-redis==4.8.0
 django-reversion==2.0.12
