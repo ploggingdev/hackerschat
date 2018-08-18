@@ -67,7 +67,7 @@ class ChatArchive(View):
         except ObjectDoesNotExist:
             raise Http404("Topic does not exist")
         if ChatMessage.objects.filter(topic=topic).count() == 0:
-            return render(request, self.template_name, {'topic' : topic, 'error_message' : "No messages have been sent in this chat room", 'message' : "No valid dates can be seleted"})
+            return render(request, self.template_name, {'topic' : topic, 'error_message' : "No messages have been sent in this chat room", 'message' : "No valid dates can be selected"})
         first_message = ChatMessage.objects.filter(topic=topic).earliest('created')
         now = timezone.now()
         min_date = datetime.datetime(first_message.created.year, first_message.created.month, first_message.created.day, tzinfo=now.tzinfo)
