@@ -3,6 +3,7 @@
 {% load widget_tweaks %}
 
 {% block title %}{{ user.username }} - Profile{% endblock %}
+{% block meta_description %}{{ user.username }} - Profile on Hackers Chat{% endblock %}
 
 {% block content %}
 <br>
@@ -12,7 +13,7 @@
 
     <div class="row">
         <div class="col-sm-6 offset-sm-3 col-lg-4 offset-lg-4 text-left">
-            <p><strong>Username : </strong>{{ user.username }}</p> 
+            <p><strong>Username : </strong>{{ user.username }}</p>  
             <p><strong>About : </strong></p>
             <p>{{ user.userprofile.about|linebreaksbr }}</p>
         </div>
