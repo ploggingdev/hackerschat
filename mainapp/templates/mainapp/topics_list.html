@@ -1,0 +1,90 @@
+{% extends "registration/base.html" %}
+
+{% load static %}
+
+{% load custom_tags %}
+
+{% block title %}Topics - Page {{ current_page_rooms.number }}{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+            <br />
+            {% include "registration/errors_and_messages.html" %}
+
+            <strong>Topics list</strong>
+
+            <br/><br/> 
+            <a class="btn btn-primary" href="{% url 'mainapp:create_topic' %}" role="button">+ Create Topic</a>
+            
+            <br/><br/>
+            <strong>OR</strong>
+            <br/><br/>
+            <form class="form-inline justify-content-center" action="{% url 'mainapp:search_view' %}" method="get">
+                <label class="sr-only" for="query">Enter search query</label>
+                <input type="text" class="form-control mb-2 mr-sm-2" id="query" name="query" placeholder="Enter search query" maxlength="20" autofocus>
+                <button type="submit" class="btn btn-primary mb-2">Search</button>
+            </form>
+            <br/><br/>
+            <div id="server_messages"></div>
+        </div>
+    </div>
+    {% if current_page_rooms %}
+
+    <div class="row text-left">
+        <div class="col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+            <ul class="list-group">
+                {% for current_page_room in current_page_rooms %}
+                <li class="list-group-item">
+                    <a href="{% url 'mainapp:chat_room' current_page_room.name %}">{{ current_page_room.name }}</a>
+                    <button id="{{ current_page_room.name }}-subscription" type="button" class="btn btn-link float-right" onclick="subscription('{{ current_page_room.name }}')">
+                        {% if user.is_authenticated %}
+                            {{ current_page_room|subscription_text:user.username }}
+                        {% else %}
+                            Subscribe
+                        {% endif %}
+                    </button>
+                </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+    </div>
+
+    {% if current_page_rooms.paginator.num_pages > 0 %}
+    <br/>
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if current_page_rooms.has_previous %}
+            <li class="page-item">
+            <a class="page-link" href="{{ request.path }}?page={{ current_page_rooms.previous_page_number }}" >Previous</a>
+            </li>
+            {% endif %}
+            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">{{ current_page_rooms.number }} of {{ current_page_rooms.paginator.num_pages }}</a></li>
+            {% if current_page_rooms.has_next %}
+            <li class="page-item">
+            <a class="page-link" href="{{ request.path }}?page={{ current_page_rooms.next_page_number }}">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    {% endif %}
+    
+    {% else %}
+    <p>No chat rooms have been created.</p>
+    {% endif %}
+
+    <br />
+
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+<script type="text/javascript" src='{% static "js/chatroom_subscribe.js" %}'></script>
+
+{% endblock %}

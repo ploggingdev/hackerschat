@@ -141,9 +141,9 @@ class ChatView(View):
             'default_rooms' : settings.DEFAULT_TOPICS
         })
 
-class CreateRoom(LoginRequiredMixin, View):
+class CreateTopic(LoginRequiredMixin, View):
     form_class = CreateRoomForm
-    template_name = "mainapp/create_room.html"
+    template_name = "mainapp/create_topic.html"
 
     def get(self, request):
         form = self.form_class()
@@ -159,7 +159,7 @@ class CreateRoom(LoginRequiredMixin, View):
                 topic.save()
                 subscription = Subscription(user=request.user, topic=topic)
                 subscription.save()
-                messages.success(request ,"Room has been created successfully")
+                messages.success(request ,"Topic has been created successfully")
                 return redirect(reverse("mainapp:chat_room", args=[topic_name]))
             else:
                 messages.error(request ,"Topic already exists")
@@ -168,8 +168,8 @@ class CreateRoom(LoginRequiredMixin, View):
             messages.error(request, "Invalid form data. Only lower case letters are allowed.")
             return render(request, self.template_name, {'form' : self.form_class()})
 
-class RoomsList(View):
-    template_name = "mainapp/rooms_list.html"
+class TopicsList(View):
+    template_name = "mainapp/topics_list.html"
     paginate_by = 10
 
     def get(self, request):

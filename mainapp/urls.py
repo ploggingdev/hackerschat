@@ -7,10 +7,12 @@ app_name = 'mainapp'
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('about/', views.AboutView.as_view(), name='about'),
-    path('createroom/', views.CreateRoom.as_view(), name='create_room'),
+    path('createtopic/', views.CreateTopic.as_view(), name='create_topic'),
     path('topics/<str:topic_name>/', views.ChatView.as_view(), name='chat_room'),
     path('topics/<str:topic_name>/chat/archive/', views.ChatArchive.as_view(), name='chat_archive'),
-    path('roomslist/', views.RoomsList.as_view(), name='rooms_list'),
+    path('topics/<str:topic_name>/forum/', views.TopicForum.as_view(), name='topic_forum'),
+    path('topics/<str:topic_name>/forum/<int:pk>/<slug:slug>/', views.ViewPost.as_view(), name='view_post'),
+    path('topicslist/', views.TopicsList.as_view(), name='topics_list'),
     path('search/', views.SearchView.as_view(), name='search_view'),
     path('chatsubscription/', views.ChatRoomSubscription.as_view(), name='chat_subscription'),
 ]
