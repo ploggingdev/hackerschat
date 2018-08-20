@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block title %}Chat Archive - {{ topic.name }}{% endblock %}
+{% block meta_description %}Chat Archive {% if not error_message %}for {{ date }} {% endif %}- topic {{ topic.name }} on Hackers Chat.{% endblock %}
 {% block content %}
 <br/>
 <div class="container-fluid">

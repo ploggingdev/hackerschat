@@ -4,7 +4,8 @@
 
 {% load custom_tags %}
 
-{% block title %}Chat Rooms Search Results - Page {{ current_page_rooms.number }}{% endblock %}
+{% block title %}{{ search_query }} Search Results - Page {{ current_page_rooms.number }}{% endblock %}
+{% block meta_description %}{{ search_query }} Search Results - Page {{ current_page_rooms.number }} on Hackers Chat.{% endblock %}
 
 {% block content %}
 
