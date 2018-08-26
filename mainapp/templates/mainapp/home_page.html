@@ -18,7 +18,7 @@
         width: 100%;
         height: 60px; /* Set the fixed height of the footer here */
     }
-    #chat-user-list, #room-list{
+    #room-list{
         overflow-y: scroll;
         max-height: 70vh;
         word-wrap:break-word;
@@ -109,17 +109,7 @@
     </div>
     <br/>
     <div class="row">
-        <div class="col-md-2 text-left d-none d-md-block" id="chat-user-list">
-            <p>
-                <span id="users-online" class="text-primary">0</span> <span id="users-online-indicator">users</span> online
-            </p>
-            <p>
-                <span id="lurkers-online" class="text-primary">0</span> <span id="onlookers-online-indicator">onlookers</span> online
-            </p>
-            <ul class="list-unstyled" id="user_list">
-            </ul>
-        </div>
-        <div class="col-md-8 text-left" id="all_messages">
+        <div class="col-md-10 text-left" id="all_messages">
             <input type="text" id="last_message_id" value="{{ first_message_id }}" hidden>
             {% if first_message_id > 0 %}
             <div class="text-center">
@@ -140,7 +130,39 @@
             </ul>
         </div>
         <div class="col-md-2 d-none d-md-block" id="room-list">
-            <a class="btn btn-primary" href="{% url 'mainapp:chat_archive' 'general' %}" role="button">Chat logs</a>
+                <p class="text-left">
+                    <span id="users-online" class="text-primary">0</span> <span id="users-online-indicator">users</span> online
+                </p>
+                <p class="text-left">
+                    <span id="lurkers-online" class="text-primary">0</span> <span id="onlookers-online-indicator">onlookers</span> online
+                </p>
+                <div class="text-left">
+                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#userlistModalLongDesktop">View user list</button>
+                </div>
+                <!-- Modal -->
+                <div class="modal fade" id="userlistModalLongDesktop" tabindex="-1" role="dialog" aria-labelledby="User list" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="userlistModalLongTitle">User list</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <ul class="list-unstyled" id="user_list">
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <br/>
+            <div class="text-left">
+                <a class="btn btn-primary" href="{% url 'mainapp:chat_archive' 'general' %}" role="button">Chat logs</a>
+            </div>
             <ul class="list-unstyled text-left">
                 {% if user.is_authenticated %}
                     {% for room in subscribed_rooms %}
@@ -165,7 +187,7 @@
 <footer class="footer">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-8 offset-md-2" id="chat-form-container">
+            <div class="col-md-10" id="chat-form-container">
                 <form id="chatform" autocomplete="off">
                     <div class="form-row">
                         <div class="col-9">
