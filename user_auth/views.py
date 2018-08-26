@@ -146,7 +146,7 @@ class RegisterView(View):
             if user is not None:
                 login(request, user)
                 redirect_to = request.POST.get('next', reverse('mainapp:index'))
-                if is_safe_url(redirect_to):
+                if is_safe_url(redirect_to, settings.ALLOWED_HOSTS):
                     return redirect(redirect_to)
                 else:
                     messages.success(request, "Welcome to Hackers Chat!")
