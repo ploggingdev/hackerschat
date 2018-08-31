@@ -14,7 +14,7 @@ channels-redis==2.3.0
 chardet==3.0.4
 constantly==15.1.0
 daphne==2.2.2
-Django==2.1
+Django==2.1.1
 django-redis==4.8.0
 django-reversion==2.0.12
 django-widget-tweaks==1.4.1
