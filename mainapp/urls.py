@@ -15,4 +15,6 @@ urlpatterns = [
     path('topicslist/', views.TopicsList.as_view(), name='topics_list'),
     path('search/', views.SearchView.as_view(), name='search_view'),
     path('chatsubscription/', views.ChatRoomSubscription.as_view(), name='chat_subscription'),
+    path('forum/votepost/<int:pk>/', views.VotePostView.as_view(), name='vote_post'),
+    path('topics/<str:topic_name>/forum/create_post', views.CreateTopicPost.as_view(), name='create_topic_post'),
 ]

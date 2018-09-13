@@ -18,6 +18,14 @@
                 <label for="id_username">Username</label>
                 <input type="text" value="{{ request.user.username }}" id="id_username" class="form-control" disabled/> 
             </div>
+            <div class="form-group">
+                <label for="id_comment_karma">Comment karma</label>
+                <input type="text" value="{{ request.user.userprofile.comment_karma }}" id="id_comment_karma" class="form-control" disabled/> 
+            </div>
+            <div class="form-group">
+                <label for="id_submission_karma">Submission karma</label>
+                <input type="text" value="{{ request.user.userprofile.submission_karma }}" id="id_comment_karma" class="form-control" disabled/> 
+            </div>
             <form method="post" class="form" action="{% url 'user_auth:profile' %}">
             {% csrf_token %}
 

@@ -1,0 +1,13 @@
+<p class="text-left">
+    Sort by : 
+    {% if sort_by == "New" %}
+        <a href="{% url 'mainapp:topic_forum' topic %}">Popular</a>
+        &nbsp
+        <u><a href="{% url 'mainapp:topic_forum' topic %}?sort_by=new">New</a></u>
+    {% else %}
+        <u><a href="{% url 'mainapp:topic_forum' topic %}">Popular</a></u>
+        &nbsp
+        <a href="{% url 'mainapp:topic_forum' topic %}?sort_by=new">New</a>
+    {% endif %}
+    <span class="float-right"><a href="{% url 'mainapp:create_topic_post' topic %}">Submit Post</a></span>
+</p>

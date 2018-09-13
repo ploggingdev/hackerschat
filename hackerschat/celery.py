@@ -27,6 +27,17 @@ app.autodiscover_tasks()
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(settings.CELERY_TASK_INTERVAL, broadcast_presence.s(), name="Broadcast presence", expires=settings.CELERY_TASK_EXPIRES)
+    sender.add_periodic_task(60.0, update_rank.s(), name="Update rank", expires=10)
+
+@app.task
+def update_rank():
+    from mainapp.models import Post, Comment
+    from django.db.models import Count
+    from django.utils import timezone
+    import datetime
+    posts = Post.objects.filter(deleted=False).annotate(comments_count=Count('comment')).filter(created__gte=timezone.now() - datetime.timedelta(days=3))
+    for post in posts:
+        post.calculate_rank(post.comments_count)
 
 @app.task(time_limit=10)
 def prune_redis_user_list():

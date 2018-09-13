@@ -13,7 +13,9 @@
 
     <div class="row">
         <div class="col-sm-6 offset-sm-3 col-lg-4 offset-lg-4 text-left">
-            <p><strong>Username : </strong>{{ user.username }}</p>  
+            <p><strong>Username : </strong>{{ user.username }}</p>
+            <p><strong>Comment karma : </strong>{{ user.userprofile.comment_karma }}</p> 
+            <p><strong>Submission karma : </strong>{{ user.userprofile.submission_karma }}</p>  
             <p><strong>About : </strong></p>
             <p>{{ user.userprofile.about|linebreaksbr }}</p>
         </div>

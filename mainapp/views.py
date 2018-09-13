@@ -1,17 +1,20 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
-from .models import Topic, ChatMessage, Subscription
+from .models import Topic, ChatMessage, Subscription, Post, VotePost, Comment, VoteComment
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpResponseBadRequest
 import datetime
 from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
-from mainapp.forms import CreateRoomForm
+from mainapp.forms import CreateRoomForm, PostModelForm
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
+from django.db.models import Count
+import markdown
+import bleach
 
 class IndexView(View):
     template_name = 'mainapp/home_page.html'
@@ -57,6 +60,162 @@ class AboutView(View):
 
     def get(self, request):
         return render(request, self.template_name)
+
+class TopicForum(View):
+    paginate_by = 10
+    template_name = 'mainapp/topic_forum.html'
+
+    def get(self, request, topic_name):
+        try:
+            topic = Topic.objects.get(name=topic_name)
+        except ObjectDoesNotExist:
+            raise Http404("Topic does not exist")
+        if request.GET.get('sort_by') == "new":
+            all_results = Post.objects.filter(topic=topic).filter(deleted=False).order_by('-created').annotate(comments_count=Count('comment'))
+            sort_by = "New"
+        else:
+            sort_by = "Popular"
+            all_results = Post.objects.filter(topic=topic).filter(deleted=False).order_by('-rank').annotate(comments_count=Count('comment'))
+
+        paginator = Paginator(all_results, self.paginate_by)
+
+        page = request.GET.get('page')
+        try:
+            post_list = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            post_list = paginator.page(1)
+            page = 1
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            post_list = paginator.page(paginator.num_pages)
+            page = paginator.num_pages
+        
+        if request.user.is_authenticated:
+            user_votes = VotePost.objects.filter(user=request.user)
+        else:
+            user_votes = list()
+
+        #subscribed rooms
+        if request.user.is_authenticated:
+            subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
+        else:
+            subscribed_rooms = None
+
+        return render(request, self.template_name, {'post_list' : post_list, 'sort_by' : sort_by, 'user_votes' : user_votes, 'topic' : topic, 'page' : page, 'subscribed_rooms' : subscribed_rooms, 'default_rooms' : settings.DEFAULT_TOPICS })
+
+class CreateTopicPost(LoginRequiredMixin, View):
+    form_class  = PostModelForm
+    template_name = 'mainapp/create_post.html'
+
+    def get(self, request, topic_name):
+        try:
+            topic = Topic.objects.get(name=topic_name)
+        except ObjectDoesNotExist:
+            raise Http404("Topic does not exist")
+        form = self.form_class()
+        #subscribed rooms
+        if request.user.is_authenticated:
+            subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
+        else:
+            subscribed_rooms = None
+        return render(request, self.template_name, {'form' : form, 'topic' : topic, 'subscribed_rooms' : subscribed_rooms})
+    
+    def post(self, request, topic_name):
+        try:
+            topic = Topic.objects.get(name=topic_name)
+        except ObjectDoesNotExist:
+            raise Http404("Topic does not exist")
+        form = self.form_class(request.POST)
+        
+        if form.is_valid():
+            title = form.cleaned_data['title']
+            body = form.cleaned_data['body']
+            body_html = markdown.markdown(body)
+            body_html = bleach.clean(body_html, tags=settings.POST_TAGS, strip=True)
+            article = Post(topic=topic, title=title, body=body, user=request.user, body_html=body_html)
+
+            article.save()
+            vote_obj = VotePost(user=request.user,
+                                post=article,
+                                value=1)
+            vote_obj.save()
+            article.upvotes += 1
+            article.save()
+            messages.success(request, 'Article has been submitted.')
+            return redirect(reverse('mainapp:topic_forum', args=[topic]) + '?sort_by=new')
+        else:
+            return render(request, self.template_name, {'form' : form})
+
+class ViewPost(View):
+    template_name = 'mainapp/view_post.html'
+
+    def get(self, request, topic_name):
+        try:
+            topic = Topic.objects.get(name=topic_name)
+        except ObjectDoesNotExist:
+            raise Http404("Topic does not exist")
+        pass
+
+class VotePostView(LoginRequiredMixin, View):
+
+    def post(self, request, pk):
+        if request.POST.get('vote_value'):
+            try:
+                post = Post.objects.filter(deleted=False).get(pk=pk)
+            except Post.DoesNotExist:
+                return HttpResponseBadRequest()
+
+            vote_value = request.POST.get('vote_value', None)
+
+            try:
+                vote_value = int(vote_value)
+                if vote_value != 1:
+                    raise ValueError("Invalid request")
+
+            except (ValueError, TypeError):
+                return HttpResponseBadRequest()
+
+            try:
+                vote_obj = VotePost.objects.get(post=post,user=request.user)
+
+            except ObjectDoesNotExist:
+                vote_obj = VotePost(user=request.user,
+                                post=post,
+                                value=vote_value)
+                vote_obj.save()
+                if vote_value == 1:
+                    vote_diff = 1
+                    post.upvotes += 1
+                elif vote_value == -1:
+                    vote_diff = -1
+                    post.upvotes -= 1
+                post.save()
+
+                if post.user != request.user:
+                    post.user.userprofile.submission_karma +=  vote_diff
+                    post.user.userprofile.save()
+
+                return JsonResponse({'error'   : None,
+                                    'vote_diff': vote_diff})
+            
+            if vote_obj.value == vote_value:
+                # cancel vote
+                vote_diff = vote_obj.unvote(request.user)
+                if not vote_diff:
+                    return HttpResponseBadRequest(
+                        'Something went wrong while canceling the vote')
+            else:
+                # change vote
+                vote_diff = vote_obj.vote(vote_value, request.user)
+                if not vote_diff:
+                    return HttpResponseBadRequest(
+                        'Wrong values for old/new vote combination')
+            
+            return JsonResponse({'error'   : None,
+                         'vote_diff': vote_diff})
+        else:
+            return HttpResponseBadRequest()
 
 class ChatArchive(View):
     template_name = 'mainapp/chat_archive.html'

@@ -1,0 +1,58 @@
+{% extends "registration/base.html" %} 
+
+{% load static %}
+{% load widget_tweaks %}
+{% load custom_tags %}
+
+{% block title %}{{ topic|title }} Forum - Page {{ page }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+{% endblock %}
+
+{% block meta_description %}{{ topic_name|title }} Forum - Page {{ page }} on Hackers Chat.{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    {% include "registration/errors_and_messages.html" %}
+
+    <br/> 
+
+    <div class="row">
+        <div class="col-md-9 text-left">
+            {% include 'mainapp/forum_links.html' %}
+            <br/>
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <input type="hidden" name="topic" value="{{ topic }}">
+                    <p>
+                    <label for="{{ form.title.id_for_label }}">Title</label> 
+                    {{ form.title |add_class:"form-control" |attr:"autofocus" }}
+                    </p>
+                    <p>
+                    <label for="{{ form.body.id_for_label }}">Body</label> 
+                    {{ form.body |add_class:"form-control" }}
+                    </p>
+                    <button class="btn btn-primary" type="submit">Submit</button> 
+                    <input type="hidden" name="next" value="{{ next }}" />
+                </form>
+                </div>
+            </div>
+        </div>
+        {% include "mainapp/sidebar_forum.html" %}
+    </div>
+    <br />
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+<script type="text/javascript" src='{% static "js/reconnecting-websockets.js" %}'></script>
+<script type="text/javascript" src='{% static "js/forum_presence.js" %}'></script>
+
+{% endblock %}

@@ -129,58 +129,7 @@
                 {% endfor %}
             </ul>
         </div>
-        <div class="col-md-3 d-none d-md-block" id="room-list">
-                <p class="text-left">
-                    <span id="users-online" class="text-primary">0</span> <span id="users-online-indicator">users</span> online
-                </p>
-                <p class="text-left">
-                    <span id="lurkers-online" class="text-primary">0</span> <span id="onlookers-online-indicator">onlookers</span> online
-                </p>
-                <div class="text-left">
-                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#userlistModalLongDesktop">View user list</button>
-                </div>
-                <!-- Modal -->
-                <div class="modal fade" id="userlistModalLongDesktop" tabindex="-1" role="dialog" aria-labelledby="User list" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="userlistModalLongTitle">User list</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <ul class="list-unstyled" id="user_list">
-                                </ul>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <br/>
-            <div class="text-left">
-                <a class="btn btn-primary" href="{% url 'mainapp:chat_archive' 'general' %}" role="button">Chat logs</a>
-            </div>
-            <ul class="list-unstyled text-left">
-                {% if user.is_authenticated %}
-                    {% for room in subscribed_rooms %}
-                        <br/>
-                        <li>
-                            <a href="{% url 'mainapp:chat_room' room.topic.name %}">{{ room.topic.name }}</a>
-                        </li>
-                    {% endfor %}
-                {% else %}
-                    {% for room in default_rooms %}
-                        <br/>
-                        <li>
-                            <a href="{% url 'mainapp:chat_room' room %}">{{ room }}</a>
-                        </li>
-                    {% endfor %}
-                {% endif%}
-            </ul>
-        </div>
+        {% include "mainapp/sidebar_chat.html" %}
     </div>
 </div>
 <br/>

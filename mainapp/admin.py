@@ -1,7 +1,8 @@
 from django.contrib import admin
-from .models import Topic, ChatMessage, Subscription
-from .forms import AdminChatMessageForm, AdminTopicForm, AdminSubscriptionForm
+from .models import Topic, ChatMessage, Subscription, Comment, VoteComment, Post, VotePost
+from .forms import AdminChatMessageForm, AdminTopicForm, AdminSubscriptionForm, AdminCommentForm, AdminPostForm
 from reversion.admin import VersionAdmin
+from mptt.admin import MPTTModelAdmin
 
 @admin.register(Topic)
 class TopicAdmin(VersionAdmin):
@@ -18,3 +19,21 @@ class ChatMessageAdmin(VersionAdmin):
 class SubscriptionAdmin(VersionAdmin):
     form = AdminSubscriptionForm
     list_display = ('topic', 'user', 'deleted', 'updated', 'created')
+
+@admin.register(Comment)
+class CommentAdmin(MPTTModelAdmin):
+    form = AdminCommentForm
+    list_display = ('comment_text','user' ,'created', 'net_votes')
+
+@admin.register(VoteComment)
+class VoteCommentAdmin(VersionAdmin):
+    list_display = ('user', 'value' ,'created')
+
+@admin.register(VotePost)
+class VotePostAdmin(VersionAdmin):
+    list_display = ('user', 'value' ,'created')
+
+@admin.register(Post)
+class PostAdmin(VersionAdmin):
+    form = AdminPostForm
+    list_display = ('title','body', 'deleted','user','created')

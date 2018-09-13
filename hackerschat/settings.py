@@ -174,3 +174,7 @@ TOXICITY_ENDPOINT = os.environ['hackerschat_toxicity_endpoint']
 ASGI_APPLICATION = "mainapp.routing.application"
 
 DEFAULT_TOPICS = ['general' ,'bitcoin', 'ethereum', 'programming', 'cryptocurrency', 'startups' ,'bitcoincash', 'gnulinux', 'bots']
+
+COMMENT_TAGS = ['a','p','blockquote', 'code', 'em', 'strong', 'li','ol','ul', 'pre']
+
+POST_TAGS = ['a','p','blockquote', 'code', 'em', 'strong', 'li','ol','ul', 'pre']
