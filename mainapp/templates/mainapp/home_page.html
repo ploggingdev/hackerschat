@@ -38,36 +38,10 @@
 <div class="container-fluid" id="chat-container">
     {% include "registration/errors_and_messages.html" %}
     <div class="row d-md-none">
-        <div class="col-6">
-            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#userlistModalLong">User list</button>
-            <!-- Modal -->
-            <div class="modal fade" id="userlistModalLong" tabindex="-1" role="dialog" aria-labelledby="User list" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="userlistModalLongTitle">User list</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>
-                                <span id="users-online-modal" class="text-primary">0</span> <span id="users-online-indicator-modal">users</span> online
-                            </p>
-                            <p>
-                                <span id="lurkers-online-modal" class="text-primary">0</span> <span id="onlookers-online-indicator-modal">onlookers</span> online
-                            </p>
-                            <ul class="list-unstyled" id="user_list-modal">
-                            </ul>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-4">
+            <a href="{% url 'mainapp:topic_forum' topic %}" role="button">Forum</a>
         </div>
-        <div class="col-6">
+        <div class="col-4">
             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#roomlistModalLong">Chat rooms</button>
             <!-- Modal -->
             <div class="modal fade" id="roomlistModalLong" tabindex="-1" role="dialog" aria-labelledby="Chat rooms" aria-hidden="true">
@@ -97,6 +71,35 @@
                                         </li>
                                     {% endfor %}
                                 {% endif%}
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#userlistModalLong">User list</button>
+            <!-- Modal -->
+            <div class="modal fade" id="userlistModalLong" tabindex="-1" role="dialog" aria-labelledby="User list" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="userlistModalLongTitle">User list</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                <span id="users-online-modal" class="text-primary">0</span> <span id="users-online-indicator-modal">users</span> online
+                            </p>
+                            <p>
+                                <span id="lurkers-online-modal" class="text-primary">0</span> <span id="onlookers-online-indicator-modal">onlookers</span> online
+                            </p>
+                            <ul class="list-unstyled" id="user_list-modal">
                             </ul>
                         </div>
                         <div class="modal-footer">
