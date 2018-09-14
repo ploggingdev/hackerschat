@@ -40,7 +40,7 @@
     {% include "registration/errors_and_messages.html" %}
     <div class="row d-md-none">
         <div class="col-4">
-            <a href="{% url 'mainapp:topic_forum' topic %}" role="button">Forum</a>
+            <a class="btn btn-link" href="{% url 'mainapp:topic_forum' topic %}" role="button">Forum</a>
         </div>
         <div class="col-4">
             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#roomlistModalLong">Chat rooms</button>
