@@ -42,19 +42,19 @@
             <a class="btn btn-link" href="{% url 'mainapp:topic_forum' topic %}" role="button">Forum</a>
         </div>
         <div class="col-4">
-            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#roomlistModalLong">Chat rooms</button>
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#roomlistModalLong">Topics</button>
             <!-- Modal -->
             <div class="modal fade" id="roomlistModalLong" tabindex="-1" role="dialog" aria-labelledby="Chat rooms" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="roomlistModalLongTitle">Chat rooms</h5>
+                            <h5 class="modal-title" id="roomlistModalLongTitle">Topics</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <a class="btn btn-primary" href="{% url 'mainapp:chat_archive' 'general' %}" role="button">Chat logs</a>
+                            <a class="btn btn-primary" href="{% url 'mainapp:chat_archive' 'general' %}" role="button">Logs</a>
                             <ul class="list-unstyled">
                                 {% if user.is_authenticated %}
                                     {% for room in subscribed_rooms %}
