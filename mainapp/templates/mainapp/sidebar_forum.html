@@ -4,7 +4,7 @@
                 <a href="{% url 'mainapp:chat_room' topic %}" role="button">Chat room</a>
             </div>
             <div class="col">
-                <a href="{% url 'mainapp:chat_archive' topic %}" role="button">Logs</a>
+                <span class="float-right"><a href="{% url 'mainapp:create_topic_post' topic %}">Submit Post</a></span>
             </div>
         </div>
         <br/>
