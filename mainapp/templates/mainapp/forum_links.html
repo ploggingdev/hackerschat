@@ -1,15 +1,12 @@
 <p class="text-left">
-    <a href="{% url 'mainapp:topic_forum' topic %}">{{ topic }}</a>
-    <span class="float-right">
-        Sort by : 
-        {% if sort_by == "New" %}
-            <a href="{% url 'mainapp:topic_forum' topic %}">Popular</a>
-            &nbsp
-            <u><a href="{% url 'mainapp:topic_forum' topic %}?sort_by=new">New</a></u>
-        {% else %}
-            <u><a href="{% url 'mainapp:topic_forum' topic %}">Popular</a></u>
-            &nbsp
-            <a href="{% url 'mainapp:topic_forum' topic %}?sort_by=new">New</a>
-        {% endif %}
-    </span>
+    Sort by : 
+    {% if sort_by == "New" %}
+        <a href="{% url 'mainapp:topic_forum' topic %}">Popular</a>
+        &nbsp
+        <u><a href="{% url 'mainapp:topic_forum' topic %}?sort_by=new">New</a></u>
+    {% else %}
+        <u><a href="{% url 'mainapp:topic_forum' topic %}">Popular</a></u>
+        &nbsp
+        <a href="{% url 'mainapp:topic_forum' topic %}?sort_by=new">New</a>
+    {% endif %}
 </p>

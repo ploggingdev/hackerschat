@@ -1,13 +1,19 @@
 <div class="col-md-3 d-none d-md-block" id="room-list">
-        <div class="row">
-            <div class="col">
-                <a href="{% url 'mainapp:chat_room' topic %}" role="button">Chat room</a>
-            </div>
-            <div class="col">
-                <span class="float-right"><a href="{% url 'mainapp:create_topic_post' topic %}">Submit Post</a></span>
-            </div>
+    <div class="row">
+        <div class="col">
+                Topic : <a href="{% url 'mainapp:topic_forum' topic %}">{{ topic }}</a>
         </div>
-        <br/>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col">
+            <a href="{% url 'mainapp:chat_room' topic %}" role="button">Chat room</a>
+        </div>
+        <div class="col">
+            <span class="float-right"><a href="{% url 'mainapp:create_topic_post' topic %}">Submit Post</a></span>
+        </div>
+    </div>
+    <br/>
     <p class="text-left">
         <span id="users-online" class="text-primary">0</span> <span id="users-online-indicator">users</span> online
     </p>
