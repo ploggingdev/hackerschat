@@ -1,13 +1,19 @@
 <div class="col-md-3 d-none d-md-block" id="room-list">
-        <div class="row">
-            <div class="col">
-                <a href="{% url 'mainapp:topic_forum' topic %}" role="button">Forum</a>
-            </div>
-            <div class="col">
-                <a href="{% url 'mainapp:chat_archive' topic %}" role="button">Logs</a>
-            </div>
+    <div class="row">
+        <div class="col">
+                Topic : <a href="{% url 'mainapp:chat_room' topic %}">{{ topic }}</a>
         </div>
-        <br/>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col">
+            <a href="{% url 'mainapp:topic_forum' topic %}" role="button">Forum</a>
+        </div>
+        <div class="col">
+            <a href="{% url 'mainapp:chat_archive' topic %}" role="button">Logs</a>
+        </div>
+    </div>
+    <br/>
     <p class="text-left">
         <span id="users-online" class="text-primary">0</span> <span id="users-online-indicator">users</span> online
     </p>
