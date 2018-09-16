@@ -12,7 +12,7 @@ from mainapp.forms import CreateRoomForm, PostModelForm, CommentForm, CommentEdi
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
-from django.db.models import Count
+from django.db.models import Count, Q
 import markdown
 import bleach
 from bs4 import BeautifulSoup
@@ -71,12 +71,13 @@ class TopicForum(View):
             topic = Topic.objects.get(name=topic_name)
         except ObjectDoesNotExist:
             raise Http404("Topic does not exist")
+        comments_count = Count('comment', filter=Q(comment__deleted=False))
         if request.GET.get('sort_by') == "new":
-            all_results = Post.objects.filter(topic=topic).filter(deleted=False).order_by('-created').annotate(comments_count=Count('comment'))
+            all_results = Post.objects.filter(topic=topic).filter(deleted=False).order_by('-created').annotate(comments_count=comments_count)
             sort_by = "New"
         else:
             sort_by = "Popular"
-            all_results = Post.objects.filter(topic=topic).filter(deleted=False).order_by('-rank').annotate(comments_count=Count('comment'))
+            all_results = Post.objects.filter(topic=topic).filter(deleted=False).order_by('-rank').annotate(comments_count=comments_count)
 
         paginator = Paginator(all_results, self.paginate_by)
 
