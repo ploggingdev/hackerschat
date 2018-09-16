@@ -15,6 +15,10 @@ urlpatterns = [
     path('topicslist/', views.TopicsList.as_view(), name='topics_list'),
     path('search/', views.SearchView.as_view(), name='search_view'),
     path('chatsubscription/', views.ChatRoomSubscription.as_view(), name='chat_subscription'),
-    path('forum/votepost/<int:pk>/', views.VotePostView.as_view(), name='vote_post'),
     path('topics/<str:topic_name>/forum/create_post', views.CreateTopicPost.as_view(), name='create_topic_post'),
+    path('forum/addcomment/<int:pk>/', views.ForumAddComment.as_view(), name='forum_add_comment'),
+    path('forum/votecomment/<int:pk>/', views.VoteCommentView.as_view(), name='vote_comment'),
+    path('forum/deletecomment/<int:pk>/', views.DeleteCommentView.as_view(), name='delete_comment'),
+    path('forum/editcomment/<int:pk>/', views.EditCommentView.as_view(), name='edit_comment'),
+    path('forum/votepost/<int:pk>/', views.VotePostView.as_view(), name='vote_post'),
 ]

@@ -8,13 +8,14 @@ import datetime
 from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
-from mainapp.forms import CreateRoomForm, PostModelForm
+from mainapp.forms import CreateRoomForm, PostModelForm, CommentForm, CommentEditForm
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
 from django.db.models import Count
 import markdown
 import bleach
+from bs4 import BeautifulSoup
 
 class IndexView(View):
     template_name = 'mainapp/home_page.html'
@@ -149,13 +150,225 @@ class CreateTopicPost(LoginRequiredMixin, View):
 
 class ViewPost(View):
     template_name = 'mainapp/view_post.html'
+    form_class = CommentForm
 
-    def get(self, request, topic_name):
+    def get(self, request, topic_name, pk, slug):
         try:
             topic = Topic.objects.get(name=topic_name)
         except ObjectDoesNotExist:
             raise Http404("Topic does not exist")
-        pass
+        
+        try:
+            post = Post.objects.get(topic=topic, pk=pk)
+        except Post.DoesNotExist:
+            return
+        if post.deleted:
+            return
+
+        nodes = Comment.objects.filter(post=post)
+        comments_count = len(Comment.objects.filter(post=post).filter(deleted=False))
+        if request.user.is_authenticated:
+            user_votes = VoteComment.objects.filter(user=request.user).filter(comment__post=post)
+        else:
+            user_votes = list()
+        form = self.form_class(initial={'parent_id' : 'None'})
+        return render(request, self.template_name, {'post' : post, 'nodes' : nodes, 'form' : form, 'user_votes' : user_votes, 'comments_count' : comments_count, 'topic' : topic })
+
+class ForumAddComment(View):
+
+    form_class = CommentForm
+
+    def post(self, request, pk):
+        
+        if not request.user.is_authenticated:
+            return JsonResponse({'error' : 'Please login to comment on this post.' }, status=400)
+        try:
+            post = Post.objects.filter(deleted=False).get(pk=pk)
+        except Post.DoesNotExist:
+            return JsonResponse({'error' : 'Invalid post id.' }, status=400)
+
+        form = self.form_class(request.POST)
+        
+        if post.deleted:
+            return JsonResponse({'error' : 'Invalid request.' }, status=400)
+        if form.is_valid():
+            if Comment.objects.filter(user=request.user).filter(created__gte=timezone.now() - datetime.timedelta(minutes=60)).count() >= 5:
+                return JsonResponse({'error' : 'Rate limit reached. You\'re posting too fast!' }, status=403)
+            comment_parent_id = form.cleaned_data['parent_id']
+            if comment_parent_id == "None":
+                comment_parent_object = None
+            else:
+                try:
+                    comment_parent_id = int(comment_parent_id)
+                    comment_parent_object = Comment.objects.get(pk=comment_parent_id)
+                    if comment_parent_object.deleted:
+                        return JsonResponse({'error' : 'Invalid request. Cannot reply to deleted comment' }, status=400)
+                except (ValueError, Comment.DoesNotExist) :
+                    return JsonResponse({'error' : 'Invalid request.' }, status=400)
+            
+            comment_text = form.cleaned_data['comment']
+            comment_text_html = markdown.markdown(comment_text)
+            comment_text_html = bleach.clean(comment_text_html, tags=settings.COMMENT_TAGS, strip=True)
+            soup = BeautifulSoup(comment_text_html, "html.parser")
+            for i in soup.find_all('a'):
+                i['target'] = '_blank'
+                i['rel'] = 'noopener noreferrer nofollow'
+            for i in soup.find_all('blockquote'):
+                i['class'] = 'blockquote'
+            comment_text_html = soup.prettify()
+            
+            comment = Comment(comment_text=comment_text, comment_text_html=comment_text_html, user=request.user, post=post, parent=comment_parent_object)
+
+            comment.save()
+            vote_obj = VoteComment(user=request.user,
+                                comment=comment,
+                                value=1)
+            vote_obj.save()
+            comment.upvotes += 1
+            comment.net_votes += 1
+            comment.save()
+            #todo : notification
+            return JsonResponse({'success' : 'Comment has been saved.', 'comment_id' : comment.id, 'comment_html' : comment.comment_text_html, 'username' : comment.user.username, 'comment_raw' : comment.comment_text })
+        else:
+            return JsonResponse({'error' : 'Invalid form submission.' }, status=400)
+
+class VoteCommentView(View):
+
+    def post(self, request, pk):
+
+        if not request.user.is_authenticated:
+            return JsonResponse({'error' : 'Please login to comment on this post.' }, status=400)
+        if request.POST.get('vote_value'):
+            try:
+                comment = Comment.objects.filter(deleted=False).get(pk=pk)
+            except Comment.DoesNotExist:
+                return JsonResponse({'error' : 'Invalid request.' }, status=400)
+            
+            if comment.post.deleted:
+                return JsonResponse({'error' : 'Invalid request.' }, status=400)
+
+            vote_value = request.POST.get('vote_value', None)
+
+            try:
+                vote_value = int(vote_value)
+                if vote_value not in [-1, 1]:
+                    return JsonResponse({'error' : 'Invalid request.' }, status=400)
+
+            except (ValueError, TypeError):
+                return JsonResponse({'error' : 'Invalid request.' }, status=400)
+
+            try:
+                vote_obj = VoteComment.objects.get(comment=comment,user=request.user)
+
+            except ObjectDoesNotExist:
+                vote_obj = VoteComment(user=request.user,
+                                comment=comment,
+                                value=vote_value)
+                vote_obj.save()
+                if vote_value == 1:
+                    vote_diff = 1
+                    comment.upvotes += 1
+                    comment.net_votes += 1
+                elif vote_value == -1:
+                    vote_diff = -1
+                    comment.downvotes += 1
+                    comment.net_votes -= 1
+                comment.save()
+
+                if comment.user != request.user:
+                    comment.user.userprofile.comment_karma +=  vote_diff
+                    comment.user.userprofile.save()
+
+                return JsonResponse({'vote_diff': vote_diff})
+            
+            if vote_obj.value == vote_value:
+                # cancel vote
+                vote_diff = vote_obj.unvote(request.user)
+                if not vote_diff:
+                    return JsonResponse({'error' : 'Invalid request.' }, status=400)
+            else:
+                # change vote
+                vote_diff = vote_obj.change_vote(vote_value, request.user)
+                if not vote_diff:
+                    return JsonResponse({'error' : 'Invalid request.' }, status=400)
+            
+            return JsonResponse({'vote_diff': vote_diff})
+        else:
+            return JsonResponse({'error' : 'Invalid request.' }, status=400)
+
+class DeleteCommentView(View):
+
+    def post(self, request, pk):
+        
+        if not request.user.is_authenticated:
+            return JsonResponse({'error' : 'Please login to comment on this post.' }, status=400)
+        
+        try:
+            post = Post.objects.filter(deleted=False).get(pk=pk)
+        except Post.DoesNotExist:
+            return JsonResponse({'error' : 'Invalid request.' }, status=400)
+        if post.deleted:
+            return JsonResponse({'error' : 'Invalid request.' }, status=400)
+        try:
+            comment_id = int(request.POST.get('comment_id', None))
+        except (ValueError, TypeError):
+            return JsonResponse({'error' : 'Invalid request.' }, status=400)
+        
+        try:
+            comment = Comment.objects.get(pk=comment_id)
+        except Comment.DoesNotExist:
+            return JsonResponse({'error' : 'Invalid request.' }, status=400)
+
+        if comment.user == request.user:
+            comment.deleted = True
+            comment.save()
+            return JsonResponse({'success' : 'Comment has been deleted.' })
+        else:
+            return JsonResponse({'error' : 'Invalid request.' }, status=400)
+
+class EditCommentView(View):
+
+    form_class = CommentEditForm
+
+    def post(self, request, pk):
+        
+        if not request.user.is_authenticated:
+            return JsonResponse({'error' : 'Please login to comment on this post.' }, status=400)
+
+        form = self.form_class(request.POST)
+        
+        try:
+            post = Post.objects.filter(deleted=False).get(pk=pk)
+        except Post.DoesNotExist:
+            return JsonResponse({'error' : 'Invalid request.' }, status=400)
+        if post.deleted:
+            return JsonResponse({'error' : 'Invalid request.' }, status=400)
+        if form.is_valid():
+            comment_id = form.cleaned_data['comment_id']
+            try:
+                comment_id = int(comment_id)
+                comment_object = Comment.objects.get(pk=comment_id)
+            except (ValueError, Comment.DoesNotExist) :
+                return JsonResponse({'error' : 'Invalid request.' }, status=400)
+            
+            comment_text = form.cleaned_data['comment']
+            comment_text_html = markdown.markdown(comment_text)
+            comment_text_html = bleach.clean(comment_text_html, tags=settings.COMMENT_TAGS, strip=True)
+            soup = BeautifulSoup(comment_text_html, "html.parser")
+            for i in soup.find_all('a'):
+                i['target'] = '_blank'
+                i['rel'] = 'noopener noreferrer nofollow'
+            for i in soup.find_all('blockquote'):
+                i['class'] = 'blockquote'
+            comment_text_html = soup.prettify()
+            
+            comment_object.comment_text = comment_text
+            comment_object.comment_text_html = comment_text_html
+
+            comment_object.save()
+            return JsonResponse({'success' : 'Comment has been updated.', 'comment_id' : comment_object.id, 'comment_html' : comment_object.comment_text_html, 'comment_raw' : comment_object.comment_text })
+        else:
+            return JsonResponse({'error' : 'Invalid form submission.' }, status=400)
 
 class VotePostView(LoginRequiredMixin, View):
 

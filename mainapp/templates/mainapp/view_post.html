@@ -1,0 +1,230 @@
+{% extends "registration/base.html" %} 
+
+{% load static %}
+{% load custom_tags %}
+{% load mptt_tags %}
+{% load widget_tweaks %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+{% endblock %}
+
+{% block meta_description %}{{ post.title }} | {{ topic|title }} Forum on Hackers Chat.{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    {% include "registration/errors_and_messages.html" %}
+
+    <div class="d-md-none"><br/></div>
+    <div class="row d-md-none">
+        <div class="col-4">
+            <a class="btn btn-link" href="{% url 'mainapp:chat_room' topic %}" role="button">Chat room</a>
+        </div>
+        <div class="col-4">
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#roomlistModalLong">Topics</button>
+            <!-- Modal -->
+            <div class="modal fade" id="roomlistModalLong" tabindex="-1" role="dialog" aria-labelledby="Chat rooms" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="roomlistModalLongTitle">Topics</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <a class="btn btn-primary" href="{% url 'mainapp:chat_archive' topic %}" role="button">Logs</a>
+                            <ul class="list-unstyled">
+                                {% if user.is_authenticated %}
+                                    {% for room in subscribed_rooms %}
+                                        <br/>
+                                        <li>
+                                            <a href="{% url 'mainapp:chat_room' room.topic.name %}">{{ room.topic.name }}</a>
+                                        </li>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for room in default_rooms %}
+                                        <br/>
+                                        <li>
+                                            <a href="{% url 'mainapp:chat_room' room %}">{{ room }}</a>
+                                        </li>
+                                    {% endfor %}
+                                {% endif%}
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#userlistModalLong">User list</button>
+            <!-- Modal -->
+            <div class="modal fade" id="userlistModalLong" tabindex="-1" role="dialog" aria-labelledby="User list" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="userlistModalLongTitle">User list</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                <span id="users-online-modal" class="text-primary">0</span> <span id="users-online-indicator-modal">users</span> online
+                            </p>
+                            <p>
+                                <span id="lurkers-online-modal" class="text-primary">0</span> <span id="onlookers-online-indicator-modal">onlookers</span> online
+                            </p>
+                            <ul class="list-unstyled" id="user_list-modal">
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-md-9 text-left">
+            <strong>{{ post.title }}</strong>
+            <br/>
+            <div id="auth_message"></div>
+            <p>
+                {% if nodes %}
+                    {% if comments_count == 1 %}
+                        <h3 id="total_comments_container"><span id="total_comments_count">1</span> comment</h3>
+                    {% else %}
+                        <h3 id="total_comments_container"><span id="total_comments_count">{{ comments_count }}</span> comments</h3>
+                    {% endif %}
+                {% else %}
+                    <br/>
+                    <em id="total_comments_container"><span id="total_comments_count" hidden>0</span> No comments yet, be the first to comment on this post!</em>
+                {% endif %}
+            </p>
+            <form action="" method="post" class="commentform" data-parent-id="None">
+                <p>
+                <label for="{{ form.comment.id_for_label }}">Add Comment</label> 
+                {{ form.comment |add_class:"form-control" |attr:"rows:5" }}
+                {{ form.parent_id |add_class:"parent_id" }}
+                </p>
+                <input class="btn btn-primary" type="submit" value="Add comment" id="id_submit" />
+            </form>
+        <br/><br/>
+            <ul class="list-unstyled" id="root_comments">
+                {% recursetree nodes %}
+                {% if node.deleted and node|no_children %}
+
+                {% else %}
+                    <li class="media" id="{{ node.id }}-media">
+                        <div class="media-left" style="color : grey">
+                            {% with vote_value=user_votes|get_vote_value:node.id %}
+                            <div>
+                                <i id="{{ node.id }}-up" class="fas fa-angle-up fa-lg" 
+                                {% if vote_value == 1  %}
+                                style="color : orangered" 
+                                {% endif %}
+                                aria-hidden="true" onclick="handle_vote({{ node.id }},'up')"></i>
+                            </div>
+                            <div>
+                                <i id="{{ node.id }}-down" class="fas fa-angle-down fa-lg" 
+                                {% if vote_value == -1  %}
+                                style="color : orangered" 
+                                {% endif %}
+                                aria-hidden="true" onclick="handle_vote({{ node.id }},'down')"></i>
+                            </div>
+                            {% endwith %}
+                        </div>
+                        &nbsp;&nbsp;
+                        <div class="media-body" id="{{ node.id }}-media-body">
+                            <em id="{{ node.id }}-em">
+                                {% if node.deleted %}
+                                [deleted]
+                                {% else %}
+                                <a id="{{ node.id }}-username" href="{% url 'user_auth:public_user_profile' node.user %}" target="_blank">{{ node.user }}</a> <span id="{{ node.id }}-points">{{ node.net_votes }}</span> <span id="{{ node.id }}-points-suffix">{{ node.net_votes|get_points }}</span>
+                                {% endif %}
+                                
+                                posted {{ node.time_since_posted }}
+                            </em>
+                            <br/>
+                            <br/>
+                            {% if node.deleted %}
+                            [deleted]
+                            <br><br>
+                            {% else %}
+                            <div id="{{ node.id }}-on-delete">
+                            <div id="{{ node.id }}_comment_html">
+                            {{ node.comment_text_html|safe }}
+                            </div>
+                            <form action="" method="post" id="{{ node.id }}_edit_form" style="display:None;" class="editform">
+                                <p>
+                                    <label for="{{ node.id }}_edit_comment">Edit Comment</label>
+                                    <textarea style="white-space:pre-wrap;" name="comment" required id="{{ node.id }}_edit_comment_textarea" class="form-control" maxlength="2000" rows="5" cols="40">{{ node.comment_text }}</textarea>
+                                    <input type="hidden" name="comment_id" value="{{ node.id }}" id="{{ node.id }}_comment_id" />
+                                </p>
+                                <ul class="list-inline">
+                                    <li class="list-inline-item">
+                                        <input class="btn btn-primary" type="submit" value="Update" />
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <input class="btn btn-default" type="button" value="Cancel" onclick="return cancel_edit({{ node.id }})" />
+                                    </li>
+                                </ul>
+                            </form>
+                            <div>
+                                <ul class="list-inline">
+                                    <li class="list-inline-item"><a href="#" onclick="return generate_reply_button({{ node.id }})">reply</a></li>
+            
+                                    {% if node.user == request.user %}
+                                        <li class="list-inline-item"><a href="#" onclick="return edit_button_clicked({{ node.id }})">edit</a></li>
+                                    
+                                        <li class="list-inline-item" id="{{ node.id }}_delete_button"><a href="#" onclick="return delete_button_clicked({{ node.id }});">delete</a></li>
+                                        <li class="list-inline-item" id="{{ node.id }}_delete_button_confirm" style="display:None;">
+                                            sure?
+                                            <a href="#" onclick="return confirm_delete_comment(event, {{ node.id }});">yes</a> /
+                                            <a href="#" onclick="return cancel_delete_comment({{ node.id }});">no</a>
+                                        </li>
+                                    {% endif %}
+            
+                                </ul>
+                                <br/>
+                            </div>
+                            </div>
+                            {% endif %}
+                            {% if not node.is_leaf_node %}
+                            <ul class="list unstyled" id="{{ node.id }}-comment-children">
+                                {{ children }}
+                            </ul>
+                        {% endif %}
+                        </div>
+                    </li>
+                    {% endif %}
+                {% endrecursetree %}
+            </ul>
+        </div>
+        {% include "mainapp/sidebar_forum.html" %}
+    </div>
+
+    <br />
+
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+<script type="text/javascript" src="{% static 'js/comments_functionality.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tab_textarea.js' %}"></script>
+<script type="text/javascript" src='{% static "js/reconnecting-websockets.js" %}'></script>
+<script type="text/javascript" src='{% static "js/forum_presence.js" %}'></script>
+
+{% endblock %}

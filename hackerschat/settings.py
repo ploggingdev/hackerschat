@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'channels',
     'reversion',
     'django.contrib.postgres',
+    'mptt',
 ]
 
 MIDDLEWARE = [

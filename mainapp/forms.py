@@ -100,3 +100,11 @@ class PostModelForm(ModelForm):
         widgets = {
             'body': forms.Textarea(attrs={'rows': 12}),
         }
+
+class CommentForm(forms.Form):
+    comment = forms.CharField(label='Comment', max_length=2000, widget=forms.Textarea)
+    parent_id = forms.CharField(widget=forms.HiddenInput(), initial="None")
+
+class CommentEditForm(forms.Form):
+    comment = forms.CharField(label='Comment', max_length=2000, widget=forms.Textarea)
+    comment_id = forms.CharField(widget=forms.HiddenInput())
