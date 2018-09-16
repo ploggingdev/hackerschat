@@ -173,7 +173,12 @@ class ViewPost(View):
         else:
             user_votes = list()
         form = self.form_class(initial={'parent_id' : 'None'})
-        return render(request, self.template_name, {'post' : post, 'nodes' : nodes, 'form' : form, 'user_votes' : user_votes, 'comments_count' : comments_count, 'topic' : topic })
+        #subscribed rooms
+        if request.user.is_authenticated:
+            subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
+        else:
+            subscribed_rooms = None
+        return render(request, self.template_name, {'post' : post, 'nodes' : nodes, 'form' : form, 'user_votes' : user_votes, 'comments_count' : comments_count, 'topic' : topic, 'subscribed_rooms' : subscribed_rooms })
 
 class ForumAddComment(View):
 
