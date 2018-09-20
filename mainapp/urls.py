@@ -21,4 +21,5 @@ urlpatterns = [
     path('forum/deletecomment/<int:pk>/', views.DeleteCommentView.as_view(), name='delete_comment'),
     path('forum/editcomment/<int:pk>/', views.EditCommentView.as_view(), name='edit_comment'),
     path('forum/votepost/<int:pk>/', views.VotePostView.as_view(), name='vote_post'),
+    path('posts/<str:username>/', views.MyPosts.as_view(), name='my_posts'),
 ]

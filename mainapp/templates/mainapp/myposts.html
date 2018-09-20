@@ -1,0 +1,84 @@
+{% extends "registration/base.html" %} 
+
+{% load static %}
+
+{% load custom_tags %}
+
+{% block title %}{{ user }} Posts - Page {{ page }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+{% endblock %}
+
+{% block meta_description %}{{ topic_name|title }} Forum - Page {{ page }} on Hackers Chat.{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    {% include "registration/errors_and_messages.html" %}
+
+    <br/>
+    <div class="row">
+        <div class="col-md-8 offset-md-2 text-left">
+            <br/>
+            {% if posts %}
+            <ul class="list-group">
+
+                {% for post in posts %}
+                <li class="list-group-item">
+                    {% if post.comment_text_html %}
+
+                    <em>Comment posted {{ post.time_since_posted }} in <a href="{{ post.get_post_url }}">{{ post.post.title }}</a>: </em>
+                    <p>
+                    {{ post.comment_text_html|safe }}
+                    </p>
+
+                    {% else %}
+
+                    <em><a href="{{ post.get_post_url }}">{{ post.title }}</a> posted {{ post.time_since_posted }}</em> in <a href="{% url 'mainapp:topic_forum' post.topic %}">{{ post.topic }}</a>
+                    <br/><br/>
+                    {% endif %}
+                    <ul class="list-inline">
+                        {% if post.can_edit and post.user == request.user %}
+                            <li><a href="">edit</a></li>
+                        {% endif %}
+                        {% if post.can_delete and post.user == request.user %}
+                            <li><a href="">delete</a></li>
+                        {% endif %}
+
+                    </ul>
+                </li>
+
+                {% endfor %}
+
+            </ul>
+            {% if posts.paginator.num_pages > 0 %}
+
+                <br/>
+                <nav aria-label="User post list navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if posts.has_previous %}
+                        <li class="page-item"><a class="page-link" href="{{ request.path }}?page={{ posts.previous_page_number }}">Previous</a></li>
+                        {% endif %}
+                        <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">{{ posts.number }} of {{ posts.paginator.num_pages }}</a></li>
+                        {% if posts.has_next %}
+                        <li class="page-item"><a class="page-link" href="{{ request.path }}?page={{ posts.next_page_number }}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+            
+            {% else %}
+                <p>The user has not posted any content so far.</p>
+            {% endif %}
+        </div>
+    </div>
+    <br />
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+{% endblock %}

@@ -15,7 +15,7 @@ class Topic(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title
+        return self.name
 
 class ChatMessage(models.Model):
 
@@ -101,7 +101,7 @@ class Post(models.Model):
     
     def get_post_url(self):
         slug = slugify(self.title)
-        return reverse('mainapp:view_post', args=[self.id, self.user, slug])
+        return reverse('mainapp:view_post', args=[self.topic, self.id, slug])
     
     def can_delete(self):
         if self.deleted:
@@ -198,7 +198,8 @@ class Comment(MPTTModel):
             return "{} days ago".format(days)
     
     def get_post_url(self):
-        pass
+        slug = slugify(self.post.title)
+        return reverse('mainapp:view_post', args=[self.post.topic, self.post.id, slug])
     
 class VoteComment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

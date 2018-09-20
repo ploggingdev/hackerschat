@@ -16,6 +16,9 @@ from django.db.models import Count, Q
 import markdown
 import bleach
 from bs4 import BeautifulSoup
+from itertools import chain
+from django.contrib.auth.models import User
+from operator import attrgetter
 
 class IndexView(View):
     template_name = 'mainapp/home_page.html'
@@ -628,3 +631,36 @@ class ChatRoomSubscription(View):
             button_text = "Unsubscribe"
         
         return JsonResponse({'message' : message, 'button_text' : button_text })
+
+class MyPosts(View):
+    
+    template_name = 'mainapp/myposts.html'
+    paginate_by = 10
+
+    def get(self, request, username):
+        try:
+            user = User.objects.get(username=username)
+        except ObjectDoesNotExist:
+            return render(request, self.template_name, {'error': "User does not exist"})
+        comments = Comment.objects.all().filter(deleted=False).filter(user=user).order_by('-created')
+        posts = Post.objects.all().filter(deleted=False).filter(user=user).order_by('-created')
+
+        total_count = Comment.objects.all().filter(deleted=False).filter(user=user).count() + Post.objects.all().filter(deleted=False).filter(user=user).count()
+
+        all_items = chain(comments, posts)
+        all_items = sorted(all_items, key=attrgetter('created'), reverse=True)
+
+        paginator = Paginator(all_items, self.paginate_by)
+
+        page = request.GET.get('page')
+        try:
+            posts = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            posts = paginator.page(1)
+            page = 1
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            posts = paginator.page(paginator.num_pages)
+            page = paginator.num_pages
+        return render(request, self.template_name, {'posts': posts, 'page' : page, 'user' : user })
