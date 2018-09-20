@@ -98,6 +98,9 @@
         <div class="col-md-9 text-left">
             <strong>{{ post.title }}</strong>
             <br/>
+            <p>
+                {{ post.body_html|safe }}
+            </p>
             <div id="auth_message"></div>
             <p>
                 {% if nodes %}
