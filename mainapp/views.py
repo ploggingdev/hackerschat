@@ -651,7 +651,8 @@ class MyPosts(View):
         try:
             user = User.objects.get(username=username)
         except ObjectDoesNotExist:
-            return render(request, self.template_name, {'error': "User does not exist"})
+            messages.error(request, "User does not exist")
+            return render(request, self.template_name, {'error' : True})
         comments = Comment.objects.all().filter(deleted=False).filter(user=user).order_by('-created')
         posts = Post.objects.all().filter(deleted=False).filter(user=user).order_by('-created')
 

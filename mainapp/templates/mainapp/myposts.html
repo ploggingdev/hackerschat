@@ -22,6 +22,11 @@
     <div class="row">
         <div class="col-md-8 offset-md-2 text-left">
             <br/>
+            <div class="text-center">
+                Posts by <a href="{% url 'user_auth:public_user_profile' user %}">{{ user }}</a> - Page {{ page }}
+            </div>
+            <br/>
+            {% if not error %}
             {% if posts %}
             <ul class="list-group">
 
@@ -71,6 +76,7 @@
             
             {% else %}
                 <p>The user has not posted any content so far.</p>
+            {% endif %}
             {% endif %}
         </div>
     </div>
