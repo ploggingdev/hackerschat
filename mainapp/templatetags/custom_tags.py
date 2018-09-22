@@ -50,3 +50,9 @@ def get_comments(val):
         return "comment"
     else:
         return "comments"
+
+@register.filter
+def get_netloc(val):
+    from urllib.parse import urlparse
+    o = urlparse(val)
+    return o.netloc

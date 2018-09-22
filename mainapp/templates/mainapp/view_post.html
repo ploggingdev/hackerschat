@@ -102,7 +102,12 @@
             {% endif %}
             aria-hidden="true" onclick="handle_post_vote({{ post.id }},'up')"></i>
             &nbsp;
-            <strong>{{ post.title }}</strong>
+            
+            {% if post.body %}
+                <strong>{{ post.title }}</strong>
+            {% else %}
+                <a rel="noopener noreferrer nofollow" href="{{ post.url }}">{{ post.title }} ({{ post.url|get_netloc }})</a>
+            {% endif %}
             <br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <span id="{{ post.id }}-post-points">{{ post.upvotes }}</span> <span id="{{ post.id }}-post-points-suffix">points</span>
