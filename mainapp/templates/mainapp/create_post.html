@@ -4,13 +4,13 @@
 {% load widget_tweaks %}
 {% load custom_tags %}
 
-{% block title %}{{ topic|title }} Forum - Page {{ page }}{% endblock %}
+{% block title %}Submit Post - {{ topic|title }} Forum{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 {% endblock %}
 
-{% block meta_description %}{{ topic_name|title }} Forum - Page {{ page }} on Hackers Chat.{% endblock %}
+{% block meta_description %}Submit Post - {{ topic_name|title }} Forum on Hackers Chat.{% endblock %}
 
 {% block content %}
 
@@ -18,20 +18,25 @@
 
     {% include "registration/errors_and_messages.html" %}
 
-    <br/> 
-
+    <br/>
     <div class="row">
         <div class="col-md-9 text-left">
-            {% include 'mainapp/forum_links.html' %}
-            <br/>
             <div class="row">
                 <div class="col-md-6 offset-md-3">
+                <p class="text-center"><strong>Submit Post</strong></p>
                 <form method="post" action="">
                     {% csrf_token %}
                     <input type="hidden" name="topic" value="{{ topic }}">
                     <p>
                     <label for="{{ form.title.id_for_label }}">Title</label> 
                     {{ form.title |add_class:"form-control" |attr:"autofocus" }}
+                    </p>
+                    <p>
+                        <label for="{{ form.url.id_for_label }}">Url</label> 
+                        {{ form.url |add_class:"form-control" }}
+                    </p>
+                    <p class="text-center">
+                        <strong>OR</strong>
                     </p>
                     <p>
                     <label for="{{ form.body.id_for_label }}">Body</label> 

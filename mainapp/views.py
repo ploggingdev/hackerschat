@@ -120,10 +120,7 @@ class CreateTopicPost(LoginRequiredMixin, View):
             raise Http404("Topic does not exist")
         form = self.form_class()
         #subscribed rooms
-        if request.user.is_authenticated:
-            subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
-        else:
-            subscribed_rooms = None
+        subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
         return render(request, self.template_name, {'form' : form, 'topic' : topic, 'subscribed_rooms' : subscribed_rooms})
     
     def post(self, request, topic_name):
@@ -136,9 +133,22 @@ class CreateTopicPost(LoginRequiredMixin, View):
         if form.is_valid():
             title = form.cleaned_data['title']
             body = form.cleaned_data['body']
-            body_html = markdown.markdown(body)
-            body_html = bleach.clean(body_html, tags=settings.POST_TAGS, strip=True)
-            article = Post(topic=topic, title=title, body=body, user=request.user, body_html=body_html)
+            url = form.cleaned_data['url']
+
+            subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
+            if body and url:
+                messages.error(request, 'Submit either a url or the body, but not both.')
+                return render(request, self.template_name, {'form' : form, 'topic' : topic, 'subscribed_rooms' : subscribed_rooms})
+            if not body and not url:
+                messages.error(request, 'Submit either a url or the body. Atleast one of the fields has to entered.')
+                return render(request, self.template_name, {'form' : form, 'topic' : topic, 'subscribed_rooms' : subscribed_rooms})
+            if body:
+                body_html = markdown.markdown(body)
+                body_html = bleach.clean(body_html, tags=settings.POST_TAGS, strip=True)
+            else:
+                body = None
+                body_html = None
+            article = Post(topic=topic, title=title, url=url, body=body, user=request.user, body_html=body_html)
 
             article.save()
             vote_obj = VotePost(user=request.user,
@@ -147,7 +157,7 @@ class CreateTopicPost(LoginRequiredMixin, View):
             vote_obj.save()
             article.upvotes += 1
             article.save()
-            messages.success(request, 'Article has been submitted.')
+            messages.success(request, 'Post has been submitted.')
             return redirect(reverse('mainapp:topic_forum', args=[topic]) + '?sort_by=new')
         else:
             return render(request, self.template_name, {'form' : form})

@@ -78,16 +78,24 @@ class AdminCommentForm(forms.ModelForm):
 class AdminPostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['topic', 'title','body', 'body_html', 'user', 'deleted', 'upvotes', 'rank']
+        fields = ['topic', 'title','url','body', 'body_html', 'user', 'deleted', 'upvotes', 'rank']
         widgets = {
             'body': forms.Textarea(attrs={'rows': 10}),
         }
 
     def clean(self):
         body = self.cleaned_data['body']
-
-        body_html = markdown.markdown(body)
-        body_html = bleach.clean(body_html, tags=settings.POST_TAGS, strip=True)
+        url = self.cleaned_data['url']
+        if body and url:
+            raise forms.ValidationError("Submit either a url or the body, but not both.")
+        if not body and not url:
+            raise forms.ValidationError("Submit either a url or the body. Atleast one of the fields has to entered.")
+        if body:
+            body_html = markdown.markdown(body)
+            body_html = bleach.clean(body_html, tags=settings.POST_TAGS, strip=True)
+        else:
+            body = None
+            body_html = None
 
         self.cleaned_data['body_html'] = body_html
 
@@ -96,7 +104,7 @@ class AdminPostForm(forms.ModelForm):
 class PostModelForm(ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'body']
+        fields = ['title', 'url', 'body']
         widgets = {
             'body': forms.Textarea(attrs={'rows': 12}),
         }
