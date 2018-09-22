@@ -18,6 +18,7 @@
                 <label for="id_username">Username</label>
                 <input type="text" value="{{ request.user.username }}" id="id_username" class="form-control" disabled/> 
             </div>
+            <p><a href="{% url 'mainapp:my_posts' request.user.username %}">My Posts</a></p>
             <div class="form-group">
                 <label for="id_comment_karma">Comment karma</label>
                 <input type="text" value="{{ request.user.userprofile.comment_karma }}" id="id_comment_karma" class="form-control" disabled/> 

@@ -6,6 +6,11 @@
     
     <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
       <ul class="navbar-nav">
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'mainapp:my_posts' user %}" style="color:white;">My Posts</a>
+        </li>
+        {% endif %}
         <li class="nav-item">
             <a class="nav-link" href="{% url 'mainapp:topics_list' %}" style="color:white;">Topics</a>
         </li>
