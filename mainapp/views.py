@@ -191,7 +191,14 @@ class ViewPost(View):
             subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
         else:
             subscribed_rooms = None
-        return render(request, self.template_name, {'post' : post, 'nodes' : nodes, 'form' : form, 'user_votes' : user_votes, 'comments_count' : comments_count, 'topic' : topic, 'subscribed_rooms' : subscribed_rooms })
+        vote_value = 0
+        if request.user.is_authenticated:
+            try:
+                vote_obj = VotePost.objects.filter(user=request.user).get(post=post)
+                vote_value = vote_obj.value
+            except ObjectDoesNotExist:
+                pass
+        return render(request, self.template_name, {'post' : post, 'nodes' : nodes, 'form' : form, 'user_votes' : user_votes, 'comments_count' : comments_count, 'topic' : topic, 'subscribed_rooms' : subscribed_rooms, 'vote_value' : vote_value })
 
 class ForumAddComment(View):
 

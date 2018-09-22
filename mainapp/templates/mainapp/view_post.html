@@ -96,7 +96,18 @@
     <br/>
     <div class="row">
         <div class="col-md-9 text-left">
+            <i id="{{ post.id }}-post-up" class="fas fa-angle-up fa-lg" 
+            {% if vote_value == 1  %}
+            style="color : orangered" 
+            {% endif %}
+            aria-hidden="true" onclick="handle_post_vote({{ post.id }},'up')"></i>
+            &nbsp;
             <strong>{{ post.title }}</strong>
+            <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span id="{{ post.id }}-post-points">{{ post.upvotes }}</span> <span id="{{ post.id }}-post-points-suffix">points</span>
+            |
+            <em>posted {{ post.time_since_posted }} by <a href="{% url 'user_auth:public_user_profile' post.user %}">{{ post.user }}</a></em>
             <br/>
             <p>
                 {{ post.body_html|safe }}
@@ -225,6 +236,7 @@
 
 {% block extra_scripts %}
 
+<script src='{% static "js/post_vote.js" %}'></script>
 <script type="text/javascript" src="{% static 'js/comments_functionality.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/tab_textarea.js' %}"></script>
 <script type="text/javascript" src='{% static "js/reconnecting-websockets.js" %}'></script>
