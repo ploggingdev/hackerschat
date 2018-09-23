@@ -1,0 +1,74 @@
+<div class="d-md-none"><br/></div>
+<div class="row d-md-none">
+    <div class="col-4">
+        <a class="btn btn-link" href="{% url 'mainapp:chat_room' topic %}" role="button">Chat room</a>
+    </div>
+    <div class="col-4">
+        <button type="button" class="btn btn-light" data-toggle="modal" data-target="#roomlistModalLong">Topics</button>
+        <!-- Modal -->
+        <div class="modal fade" id="roomlistModalLong" tabindex="-1" role="dialog" aria-labelledby="Chat rooms" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="roomlistModalLongTitle">Topics</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <a class="btn btn-primary" href="{% url 'mainapp:chat_archive' topic %}" role="button">Logs</a>
+                        <ul class="list-unstyled">
+                            {% if user.is_authenticated %}
+                                {% for room in subscribed_rooms %}
+                                    <br/>
+                                    <li>
+                                        <a href="{% url 'mainapp:chat_room' room.topic.name %}">{{ room.topic.name }}</a>
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                                {% for room in default_rooms %}
+                                    <br/>
+                                    <li>
+                                        <a href="{% url 'mainapp:chat_room' room %}">{{ room }}</a>
+                                    </li>
+                                {% endfor %}
+                            {% endif%}
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <button type="button" class="btn btn-light" data-toggle="modal" data-target="#userlistModalLong">User list</button>
+        <!-- Modal -->
+        <div class="modal fade" id="userlistModalLong" tabindex="-1" role="dialog" aria-labelledby="User list" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userlistModalLongTitle">User list</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            <span id="users-online-modal" class="text-primary">0</span> <span id="users-online-indicator-modal">users</span> online
+                        </p>
+                        <p>
+                            <span id="lurkers-online-modal" class="text-primary">0</span> <span id="onlookers-online-indicator-modal">onlookers</span> online
+                        </p>
+                        <ul class="list-unstyled" id="user_list-modal">
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
