@@ -16,6 +16,12 @@ class Topic(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_topic_forum_url(self):
+        return reverse('mainapp:topic_forum', args=[self.name])
+    
+    def get_topic_chat_url(self):
+        return reverse('mainapp:chat_room', args=[self.name])
 
 class ChatMessage(models.Model):
 

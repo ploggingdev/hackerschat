@@ -4,13 +4,13 @@
 
 {% load custom_tags %}
 
-{% block title %}{{ topic|title }} Forum - Page {{ page }}{% endblock %}
+{% block title %}Delete post - {{ post.title }} - {{ topic|title }} Forum {% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 {% endblock %}
 
-{% block meta_description %}{{ topic_name|title }} Forum - Page {{ page }} on Hackers Chat.{% endblock %}
+{% block meta_description %}Delete post - {{ post.title }} - {{ topic_name|title }} Forum on Hackers Chat.{% endblock %}
 
 {% block content %}
 
@@ -94,68 +94,21 @@
     </div>
     <br/>
     <div class="row">
-        <div class="col-md-9 text-left">
+        <div class="col-md-9 text-center">
             {% include 'mainapp/forum_links.html' %}
             <br/>
-            {% if post_list %}
-            <ul class="list-group">
-
-                {% for post in post_list %}
-                <li class="list-group-item">
-                    <div class="media">
-                        <div class="media-left text-center">
-                            {% with vote_value=user_votes|get_post_vote_value:post.id %}
-                            <div>
-                                <i id="{{ post.id }}-post-up" class="fas fa-angle-up fa-lg" 
-                                {% if vote_value == 1  %}
-                                style="color : orangered" 
-                                {% endif %}
-                                aria-hidden="true" onclick="handle_post_vote({{ post.id }},'up')"></i>
-                            </div>
-                            <div>
-                            </div>
-                            {% endwith %}
-                        </div>
-                        &nbsp;&nbsp;
-                        <div class="media-body">
-                            {% if post.body %}
-                                <a href="{% url 'mainapp:view_post' topic post.id post.title|slugify %}">{{ post.title }}</a>
-                            {% else %}
-                                <a rel="noopener noreferrer nofollow" href="{{ post.url }}">{{ post.title }} ({{ post.url|get_netloc }})</a>
-                            {% endif %}
-                            <br/>
-                            <span id="{{ post.id }}-post-points">{{ post.upvotes }}</span> <span id="{{ post.id }}-post-points-suffix">points</span>
-                            | <a href="{% url 'mainapp:view_post' topic post.id post.title|slugify %}">{{ post.comments_count }} {{ post.comments_count|get_comments }}</a> 
-                            |
-                            <em>posted {{ post.time_since_posted }} by <a href="{% url 'user_auth:public_user_profile' post.user %}">{{ post.user }}</a></em>
-                            {% if post.can_delete %}
-                            | <a href="{% url 'mainapp:delete_post' post.topic post.id %}">delete</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </li>
-                {% endfor %}
-
-            </ul>
-            {% if post_list.paginator.num_pages > 0 %}
-
-                <br/>
-                <nav aria-label="Forum navigation">
-                    <ul class="pagination justify-content-center">
-                        {% if post_list.has_previous %}
-                        <li class="page-item"><a class="page-link" href="{{ request.path }}?page={{ post_list.previous_page_number }}">Previous</a></li>
-                        {% endif %}
-                        <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">{{ post_list.number }} of {{ post_list.paginator.num_pages }}</a></li>
-                        {% if post_list.has_next %}
-                        <li class="page-item"><a class="page-link" href="{{ request.path }}?page={{ post_list.next_page_number }}">Next</a></li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            {% endif %}
-            
-            {% else %}
-                <p>There are no posts currently</p>
-            {% endif %}
+            <em>Are you sure you want to delete the following post? :</em>
+            <br/><br/>
+            <p> 
+                <strong>{{ post.title }}</strong>{% if not post.body %} ({{ post.url|get_netloc }}){% endif %}
+            </p>
+            <form method="post" action="">
+                {% csrf_token %}
+                <input type="hidden" name="delete_post" value="yes">
+                <button class="btn btn-danger" type="submit">Delete</button> 
+                <a href="{{ go_back_url }}" class="btn btn-default">Go back</a>
+                <input type="hidden" name="next" value="{{ next }}" />
+            </form>
         </div>
         {% include "mainapp/sidebar_forum.html" %}
     </div>
@@ -168,7 +121,6 @@
 
 {% block extra_scripts %}
 
-<script src='{% static "js/post_vote.js" %}'></script>
 <script type="text/javascript" src='{% static "js/reconnecting-websockets.js" %}'></script>
 <script type="text/javascript" src='{% static "js/forum_presence.js" %}'></script>
 

@@ -682,3 +682,30 @@ class MyPosts(View):
             posts = paginator.page(paginator.num_pages)
             page = paginator.num_pages
         return render(request, self.template_name, {'posts': posts, 'page' : page, 'user' : user })
+
+class DeletePost(LoginRequiredMixin, View):
+    
+    template_name = 'mainapp/post_delete.html'
+
+    def get(self, request, topic_name, pk):
+        post = get_object_or_404(Post, pk=pk)
+        go_back_url = post.get_post_url()
+        if (not post.can_delete()) or (post.user != request.user):
+            messages.error(request, 'Invalid request, please try again.')
+            return redirect(go_back_url)
+        subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
+        return render(request, self.template_name, {'post' : post, 'go_back_url' : go_back_url, 'subscribed_rooms' : subscribed_rooms, 'topic' : post.topic})
+    
+    def post(self, request, topic_name, pk):
+        
+        post = get_object_or_404(Post, pk=pk)
+        if request.POST.get('delete_post'):
+            if post.can_delete() and post.user == request.user:
+                post.deleted = True
+                post.save()
+                messages.success(request, 'Post has been deleted.')
+            else:
+                messages.error(request, 'Post could not be deleted.')
+        else:
+            messages.error(request, 'Invalid request')
+        return redirect(post.topic.get_topic_forum_url())
