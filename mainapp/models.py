@@ -121,6 +121,9 @@ class Post(models.Model):
             return True
         else:
             return False
+    
+    def can_edit(self):
+        return False
 
 class VotePost(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -207,6 +210,30 @@ class Comment(MPTTModel):
     def get_post_url(self):
         slug = slugify(self.post.title)
         return reverse('mainapp:view_post', args=[self.post.topic, self.post.id, slug])
+    
+    def can_delete(self):
+        if self.deleted:
+            return False
+        now = timezone.now()
+        timediff = now - self.created
+        minutes = int(timediff.total_seconds()/60)
+        hours = int(minutes/60)
+        if hours <= 1 and Comment.objects.filter(parent=self).filter(deleted=False).count() == 0:
+            return True
+        else:
+            return False
+    
+    def can_edit(self):
+        if self.deleted:
+            return False
+        now = timezone.now()
+        timediff = now - self.created
+        minutes = int(timediff.total_seconds()/60)
+        hours = int(minutes/60)
+        if hours <= 1:
+            return True
+        else:
+            return False
     
 class VoteComment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

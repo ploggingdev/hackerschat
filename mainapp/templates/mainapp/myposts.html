@@ -44,6 +44,7 @@
                     <em><a href="{{ post.get_post_url }}">{{ post.title }}</a> posted {{ post.time_since_posted }}</em> in <a href="{% url 'mainapp:topic_forum' post.topic %}">{{ post.topic }}</a>
                     <br/><br/>
                     {% endif %}
+                    <!--
                     <ul class="list-inline">
                         {% if post.can_edit and post.user == request.user %}
                             <li><a href="">edit</a></li>
@@ -53,6 +54,7 @@
                         {% endif %}
 
                     </ul>
+                   -->
                 </li>
 
                 {% endfor %}
