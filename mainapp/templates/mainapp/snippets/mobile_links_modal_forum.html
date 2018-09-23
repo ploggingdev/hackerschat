@@ -19,7 +19,6 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <a class="btn btn-primary" href="{% url 'mainapp:chat_archive' topic %}" role="button">Logs</a>
                         <ul class="list-unstyled">
                             {% if user.is_authenticated %}
                                 {% for room in subscribed_rooms %}
