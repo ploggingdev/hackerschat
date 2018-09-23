@@ -198,7 +198,7 @@ class ViewPost(View):
                 vote_value = vote_obj.value
             except ObjectDoesNotExist:
                 pass
-        return render(request, self.template_name, {'post' : post, 'nodes' : nodes, 'form' : form, 'user_votes' : user_votes, 'comments_count' : comments_count, 'topic' : topic, 'subscribed_rooms' : subscribed_rooms, 'vote_value' : vote_value })
+        return render(request, self.template_name, {'post' : post, 'nodes' : nodes, 'form' : form, 'user_votes' : user_votes, 'comments_count' : comments_count, 'topic' : topic, 'subscribed_rooms' : subscribed_rooms, 'vote_value' : vote_value, 'default_rooms' : settings.DEFAULT_TOPICS })
 
 class ForumAddComment(View):
 
