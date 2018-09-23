@@ -128,7 +128,7 @@
                             | <a href="{% url 'mainapp:view_post' topic post.id post.title|slugify %}">{{ post.comments_count }} {{ post.comments_count|get_comments }}</a> 
                             |
                             <em>posted {{ post.time_since_posted }} by <a href="{% url 'user_auth:public_user_profile' post.user %}">{{ post.user }}</a></em>
-                            {% if post.can_delete %}
+                            {% if post.can_delete and post.user == request.user %}
                             | <a href="{% url 'mainapp:delete_post' post.topic post.id %}">delete</a>
                             {% endif %}
                         </div>

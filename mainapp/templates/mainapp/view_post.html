@@ -113,7 +113,7 @@
             <span id="{{ post.id }}-post-points">{{ post.upvotes }}</span> <span id="{{ post.id }}-post-points-suffix">points</span>
             |
             <em>posted {{ post.time_since_posted }} by <a href="{% url 'user_auth:public_user_profile' post.user %}">{{ post.user }}</a></em>
-            {% if post.can_delete %}
+            {% if post.can_delete and post.user == request.user %}
             | <a href="{% url 'mainapp:delete_post' post.topic post.id %}">delete</a>
             {% endif %}
             <br/>
