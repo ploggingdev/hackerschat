@@ -44,9 +44,11 @@
             | <a href="{% url 'mainapp:delete_post' post.topic post.id %}">delete</a>
             {% endif %}
             <br/>
-            <p>
-                {{ post.body_html|safe }}
-            </p>
+            {% if post.body %}
+                <p>
+                    {{ post.body_html|safe }}
+                </p>
+            {% endif %}
             <div id="auth_message"></div>
             <p>
                 {% if nodes %}
