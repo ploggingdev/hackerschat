@@ -18,11 +18,11 @@
 
     {% include "registration/errors_and_messages.html" %}
 
-    {% include "mainapp/mobile_links_modal_forum.html" %}
+    {% include "mainapp/snippets/mobile_links_modal_forum.html" %}
     <br/>
     <div class="row">
         <div class="col-md-9 text-left">
-            {% include 'mainapp/forum_links.html' %}
+            {% include 'mainapp/snippets/forum_links.html' %}
             <br/>
             {% if post_list %}
             <ul class="list-group">
@@ -84,7 +84,7 @@
                 <p>There are no posts currently</p>
             {% endif %}
         </div>
-        {% include "mainapp/sidebar_forum.html" %}
+        {% include "mainapp/snippets/sidebar_forum.html" %}
     </div>
 
     <br />

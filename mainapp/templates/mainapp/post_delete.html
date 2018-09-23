@@ -18,11 +18,10 @@
 
     {% include "registration/errors_and_messages.html" %}
 
-    {% include "mainapp/mobile_links_modal_forum.html" %}
+    {% include "mainapp/snippets/mobile_links_modal_forum.html" %}
     <br/>
     <div class="row">
         <div class="col-md-9 text-center">
-            {% include 'mainapp/forum_links.html' %}
             <br/>
             <em>Are you sure you want to delete the following post? :</em>
             <br/><br/>
@@ -37,7 +36,7 @@
                 <input type="hidden" name="next" value="{{ next }}" />
             </form>
         </div>
-        {% include "mainapp/sidebar_forum.html" %}
+        {% include "mainapp/snippets/sidebar_forum.html" %}
     </div>
 
     <br />
