@@ -345,6 +345,9 @@ class DeleteCommentView(View):
         except Comment.DoesNotExist:
             return JsonResponse({'error' : 'Invalid request.' }, status=400)
 
+        if not comment.can_delete():
+            return JsonResponse({'error' : 'Invalid request.' }, status=400)
+
         if comment.user == request.user:
             comment.deleted = True
             comment.save()
@@ -377,6 +380,11 @@ class EditCommentView(View):
             except (ValueError, Comment.DoesNotExist) :
                 return JsonResponse({'error' : 'Invalid request.' }, status=400)
             
+            if not comment_object.can_edit():
+                return JsonResponse({'error' : 'Invalid request.' }, status=400)
+            if comment_object.user != request.user:
+                return JsonResponse({'error' : 'Invalid request.' }, status=400)
+
             comment_text = form.cleaned_data['comment']
             comment_text_html = markdown.markdown(comment_text)
             comment_text_html = bleach.clean(comment_text_html, tags=settings.COMMENT_TAGS, strip=True)

@@ -134,9 +134,14 @@
                                     <li class="list-inline-item"><a href="#" onclick="return generate_reply_button({{ node.id }})">reply</a></li>
             
                                     {% if node.user == request.user %}
+                                        {% if node.can_edit %}
                                         <li class="list-inline-item"><a href="#" onclick="return edit_button_clicked({{ node.id }})">edit</a></li>
-                                    
+                                        {% endif %}
+
+                                        {% if node.can_delete %}
                                         <li class="list-inline-item" id="{{ node.id }}_delete_button"><a href="#" onclick="return delete_button_clicked({{ node.id }});">delete</a></li>
+                                        {% endif %}
+
                                         <li class="list-inline-item" id="{{ node.id }}_delete_button_confirm" style="display:None;">
                                             sure?
                                             <a href="#" onclick="return confirm_delete_comment(event, {{ node.id }});">yes</a> /
