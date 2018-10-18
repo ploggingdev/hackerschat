@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Topic, ChatMessage, Subscription, Comment, VoteComment, Post, VotePost
-from .forms import AdminChatMessageForm, AdminTopicForm, AdminSubscriptionForm, AdminCommentForm, AdminPostForm
+from .models import Topic, ChatMessage, Subscription, Comment, VoteComment, Post, VotePost, Room
+from .forms import AdminChatMessageForm, AdminTopicForm, AdminSubscriptionForm, AdminCommentForm, AdminPostForm, AdminRoomForm
 from reversion.admin import VersionAdmin
 from mptt.admin import MPTTModelAdmin
 
@@ -8,6 +8,11 @@ from mptt.admin import MPTTModelAdmin
 class TopicAdmin(VersionAdmin):
     form = AdminTopicForm
     list_display = ('name','updated','created')
+
+@admin.register(Room)
+class RoomAdmin(VersionAdmin):
+    form = AdminRoomForm
+    list_display = ('name', 'topic','updated','created')
 
 @admin.register(ChatMessage)
 class ChatMessageAdmin(VersionAdmin):

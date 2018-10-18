@@ -23,9 +23,19 @@ class Topic(models.Model):
     def get_topic_chat_url(self):
         return reverse('mainapp:chat_room', args=[self.name])
 
+class Room(models.Model):
+    name = models.CharField(max_length=20)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
 class ChatMessage(models.Model):
 
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField(max_length=3000)
     message_html = models.TextField()

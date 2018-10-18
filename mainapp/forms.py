@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Topic, ChatMessage, Subscription, Comment, Post
+from .models import Topic, ChatMessage, Subscription, Comment, Post, Room
 import bleach
 import markdown
 from django.conf import settings
@@ -16,10 +16,15 @@ class AdminTopicForm(forms.ModelForm):
         model = Topic
         fields = ['name', 'title']
 
+class AdminRoomForm(forms.ModelForm):
+    class Meta:
+        model = Room
+        fields = ['name', 'topic']
+
 class AdminChatMessageForm(forms.ModelForm):
     class Meta:
         model = ChatMessage
-        fields = ['topic', 'user', 'message', 'message_html']
+        fields = ['topic', 'room', 'user', 'message', 'message_html']
 
     def clean(self):
         message = self.cleaned_data['message']
