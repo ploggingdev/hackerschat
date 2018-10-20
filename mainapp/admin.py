@@ -12,7 +12,7 @@ class TopicAdmin(VersionAdmin):
 @admin.register(Room)
 class RoomAdmin(VersionAdmin):
     form = AdminRoomForm
-    list_display = ('name', 'topic','updated','created')
+    list_display = ('name', 'topic', 'position' ,'updated','created')
 
 @admin.register(ChatMessage)
 class ChatMessageAdmin(VersionAdmin):

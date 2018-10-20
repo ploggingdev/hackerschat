@@ -26,6 +26,7 @@ class Topic(models.Model):
 class Room(models.Model):
     name = models.CharField(max_length=20)
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    position = models.IntegerField(default=10)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

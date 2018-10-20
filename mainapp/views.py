@@ -53,7 +53,7 @@ class IndexView(View):
             subscribed_rooms = None
         
         #sub rooms
-        sub_rooms = Room.objects.filter(topic=topic)
+        sub_rooms = Room.objects.filter(topic=topic).order_by('position')
         return render(request, self.template_name, {
             'topic': topic,
             'chat_messages': chat_messages,
@@ -544,7 +544,7 @@ class ChatView(View):
         else:
             subscribed_rooms = None
         #sub rooms
-        sub_rooms = Room.objects.filter(topic=topic)
+        sub_rooms = Room.objects.filter(topic=topic).order_by('position')
         return render(request, self.template_name, {
             'topic': topic,
             'chat_messages': chat_messages,

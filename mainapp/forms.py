@@ -19,7 +19,7 @@ class AdminTopicForm(forms.ModelForm):
 class AdminRoomForm(forms.ModelForm):
     class Meta:
         model = Room
-        fields = ['name', 'topic']
+        fields = ['name', 'topic', 'position']
 
 class AdminChatMessageForm(forms.ModelForm):
     class Meta:
