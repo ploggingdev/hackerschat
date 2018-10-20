@@ -43,21 +43,43 @@
             </div>
         </div>
     </div>
-    <ul class="list-unstyled text-left">
-        {% if user.is_authenticated %}
-            {% for room in subscribed_rooms %}
-                <br/>
-                <li>
-                    <a href="{% url 'mainapp:chat_room' room.topic.name %}">{{ room.topic.name }}</a>
-                </li>
-            {% endfor %}
-        {% else %}
-            {% for room in default_rooms %}
-                <br/>
-                <li>
-                    <a href="{% url 'mainapp:chat_room' room %}">{{ room }}</a>
-                </li>
-            {% endfor %}
-        {% endif%}
-    </ul>
+    <br/>
+    <nav class="nav-pills nav-fill">
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active" id="nav-sub-rooms-tab" data-toggle="tab" href="#nav-sub-rooms" role="tab" aria-controls="nav-sub-rooms" aria-selected="true">Sub rooms</a>
+            <a class="nav-item nav-link" id="nav-topics-tab" data-toggle="tab" href="#nav-topics" role="tab" aria-controls="nav-topics" aria-selected="false">Topics</a>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-sub-rooms" role="tabpanel" aria-labelledby="nav-sub-rooms-tab">
+            <ul class="list-unstyled text-left">
+                {% for sub_room in sub_rooms %}
+                    <br/>
+                    <li>
+                        <a href="#"># {{ sub_room.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="tab-pane fade" id="nav-topics" role="tabpanel" aria-labelledby="nav-topics-tab">
+            <ul class="list-unstyled text-left">
+                {% if user.is_authenticated %}
+                    {% for room in subscribed_rooms %}
+                        <br/>
+                        <li>
+                            <a href="{% url 'mainapp:chat_room' room.topic.name %}">{{ room.topic.name }}</a>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    {% for room in default_rooms %}
+                        <br/>
+                        <li>
+                            <a href="{% url 'mainapp:chat_room' room %}">{{ room }}</a>
+                        </li>
+                    {% endfor %}
+                {% endif%}
+            </ul>
+        </div>
+    </div>
 </div>

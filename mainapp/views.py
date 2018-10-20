@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
-from .models import Topic, ChatMessage, Subscription, Post, VotePost, Comment, VoteComment
+from .models import Topic, ChatMessage, Subscription, Post, VotePost, Comment, VoteComment, Room
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, JsonResponse, HttpResponseBadRequest
 import datetime
@@ -51,12 +51,16 @@ class IndexView(View):
             subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
         else:
             subscribed_rooms = None
+        
+        #sub rooms
+        sub_rooms = Room.objects.filter(topic=topic)
         return render(request, self.template_name, {
             'topic': topic,
             'chat_messages': chat_messages,
             'first_message_id' : previous_id,
             'subscribed_rooms' : subscribed_rooms,
-            'default_rooms' : settings.DEFAULT_TOPICS
+            'default_rooms' : settings.DEFAULT_TOPICS,
+            'sub_rooms' : sub_rooms,
         })
 
 class AboutView(View):
@@ -539,12 +543,15 @@ class ChatView(View):
             subscribed_rooms = Subscription.objects.filter(user=request.user).filter(deleted=False).order_by('topic__name')
         else:
             subscribed_rooms = None
+        #sub rooms
+        sub_rooms = Room.objects.filter(topic=topic)
         return render(request, self.template_name, {
             'topic': topic,
             'chat_messages': chat_messages,
             'first_message_id' : previous_id,
             'subscribed_rooms' : subscribed_rooms,
-            'default_rooms' : settings.DEFAULT_TOPICS
+            'default_rooms' : settings.DEFAULT_TOPICS,
+            'sub_rooms' : sub_rooms,
         })
 
 class CreateTopic(LoginRequiredMixin, View):
