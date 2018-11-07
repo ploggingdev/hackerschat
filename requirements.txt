@@ -14,7 +14,7 @@ channels==2.1.5
 channels-redis==2.3.1
 chardet==3.0.4
 constantly==15.1.0
-daphne==2.2.2
+daphne==2.2.3
 Django==2.1.2
 django-js-asset==1.1.0
 django-mptt==0.9.1
