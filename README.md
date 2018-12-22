@@ -1,4 +1,18 @@
-# Hackers Chat setup instructions
+# Hackers Chat
+
+Source code for https://www.hackerschat.net/
+
+<p align="center">
+    <a href="https://www.hackerschat.net/topics/hackerschat/" alt="Chat on Hackerschat">
+        <img src="https://img.shields.io/badge/chat-on%20Hackerschat-brightgreen.svg" />
+    </a>
+    &nbsp;&nbsp;
+    <a href="https://www.hackerschat.net/topics/hackerschat/forum/" alt="Forum on Hackerschat">
+        <img src="https://img.shields.io/badge/forum-on%20Hackerschat-brightgreen.svg" />
+    </a>
+</p>
+
+# Setup instructions
 
 *Note* : These instructions were tested on Ubuntu 18.04. If you are using a different OS, the installation instructions will need to be tweaked.
 
