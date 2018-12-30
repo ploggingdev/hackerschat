@@ -2,6 +2,7 @@ from django import template
 from mainapp.models import Subscription
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
+from django.utils.text import slugify
 
 register = template.Library()
 
@@ -56,3 +57,7 @@ def get_netloc(val):
     from urllib.parse import urlparse
     o = urlparse(val)
     return o.netloc
+
+@register.filter
+def unicode_slugify(input_string):
+    return slugify(input_string, allow_unicode=True)

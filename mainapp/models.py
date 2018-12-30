@@ -118,7 +118,7 @@ class Post(models.Model):
             return "{} days ago".format(days)
     
     def get_post_url(self):
-        slug = slugify(self.title)
+        slug = slugify(self.title, allow_unicode=True)
         return reverse('mainapp:view_post', args=[self.topic, self.id, slug])
     
     def can_delete(self):
@@ -219,7 +219,7 @@ class Comment(MPTTModel):
             return "{} days ago".format(days)
     
     def get_post_url(self):
-        slug = slugify(self.post.title)
+        slug = slugify(self.post.title, allow_unicode=True)
         return reverse('mainapp:view_post', args=[self.post.topic, self.post.id, slug])
     
     def can_delete(self):
