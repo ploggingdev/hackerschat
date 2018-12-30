@@ -13,6 +13,7 @@ certifi==2018.11.29
 channels==2.1.6
 channels-redis==2.3.2
 chardet==3.0.4
+Click==7.0
 constantly==15.1.0
 daphne==2.2.4
 Django==2.1.4
@@ -21,8 +22,11 @@ django-mptt==0.9.1
 django-redis==4.10.0
 django-reversion==3.0.2
 django-widget-tweaks==1.4.3
+gunicorn==19.9.0
+h11==0.8.1
 hiredis==0.3.0
 html5lib==1.0.1
+httptools==0.0.11
 hyperlink==18.0.0
 idna==2.8
 incremental==17.5.0
@@ -41,6 +45,9 @@ six==1.11.0
 Twisted==18.7.0
 txaio==18.8.1
 urllib3==1.24.1
+uvicorn==0.3.23
+uvloop==0.11.3
 vine==1.1.4
 webencodings==0.5.1
+websockets==7.0
 zope.interface==4.5.0
