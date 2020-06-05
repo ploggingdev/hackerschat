@@ -16,7 +16,7 @@ chardet==3.0.4
 Click==7.0
 constantly==15.1.0
 daphne==2.2.4
-Django==2.1.4
+Django==2.2.13
 django-js-asset==1.1.0
 django-mptt==0.9.1
 django-redis==4.10.0
